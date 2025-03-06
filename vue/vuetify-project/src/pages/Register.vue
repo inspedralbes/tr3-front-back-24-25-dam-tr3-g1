@@ -38,9 +38,6 @@
                 <v-btn class="me-4" @click="register">
                     Registrar-se
                 </v-btn>
-                <v-btn @click="clear">
-                    Netejar
-                </v-btn>
             </form>
             <v-card-actions>
                 <router-link to="/login">Ja tens un compte? Inicia sessió</router-link>
