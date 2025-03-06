@@ -31,13 +31,19 @@
 
 <script setup>
 import { reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import useVuelidate from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'
+import {useAppStore} from '@/stores/app.js'
 
 const initialState = {
     email: '',
     password: '',
 }
+
+const appStore = useAppStore()
+const router = useRouter()
+
 
 const state = reactive({
     ...initialState,
@@ -50,11 +56,25 @@ const rules = {
 
 const v$ = useVuelidate(rules, state)
 
-function clear() {
-    v$.value.$reset()
-
-    for (const [key, value] of Object.entries(initialState)) {
-        state[key] = value
+async function login() {
+    v$.value.$touch()
+    if (v$.value.$error) return
+    const res= await fetch('http://localhost:4000/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(state)
+    })
+    const data = await res.json()
+    if (data.error) {
+        console.error(data.error)
+        return
     }
+    appStore.setArmy(JSON.parse(data.army));
+    console.log('login', state)
+    router.push('/')
+
+    
 }
 </script>
