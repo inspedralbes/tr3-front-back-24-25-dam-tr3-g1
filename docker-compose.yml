@@ -1,0 +1,87 @@
+services:
+  tr-3-front:
+    image: node:23-bookworm-slim
+    command: sh -c "cp .env.DEV .env && npm install && npm run dev"
+    volumes:
+      - ./vue/vuetify-project:/usr/src/app
+    working_dir: /usr/src/app
+    ports:
+      - 5173:5173
+    links:
+      - tr-3-back
+
+  tr-3-back:
+    build:
+      dockerfile: ./back/dev.Dockerfile
+      context: .
+    command: sh -c "cp .env.DEV .env && npm install && npm run dev"
+    volumes:
+      - ./back/node:/usr/src/app
+    working_dir: /usr/src/app
+    ports:
+      - 3000:3000
+    links:
+      - tr-3-mysql
+      - tr-3-mongodb
+    depends_on:
+      - tr-3-mongodb
+
+  tr-3-mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - mongo-db:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_URL: mongodb://root:root@tr-3-mongodb:27017/
+      ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - tr-3-mongodb
+  tr-3-mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: game
+    volumes:
+      - mysql-db:/var/lib/mysql:rw
+      - ./bd/sql/create.sql:/docker-entrypoint-initdb.d/01_create.sql:ro
+      - ./bd/sql/insert.sql:/docker-entrypoint-initdb.d/02_insert.sql:ro
+    ports:
+      - 3306:3306
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      ADMINER_DEFAULT_SERVER: tr-3-mysql
+    depends_on:
+      - tr-3-mysql
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - 9443:9443
+    volumes:
+      - data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  mysql-db:
+  mongo-db:
+  data:
