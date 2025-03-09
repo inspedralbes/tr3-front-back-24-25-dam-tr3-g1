@@ -1,7 +1,7 @@
 services:
   tr-3-front:
     image: node:23-bookworm-slim
-    command: sh -c "cp .env.DEV .env && npm install && npm run dev"
+    command: sh -c "npm install && npm run dev"
     volumes:
       - ./vue/vuetify-project:/usr/src/app
     working_dir: /usr/src/app
@@ -14,9 +14,9 @@ services:
     build:
       dockerfile: ./back/dev.Dockerfile
       context: .
-    command: sh -c "cp .env.DEV .env && npm install && npm run dev"
+    command: sh -c "npm install && npm run index.js"
     volumes:
-      - ./back/node:/usr/src/app
+      - ./back:/usr/src/app
     working_dir: /usr/src/app
     ports:
       - 3000:3000
@@ -57,8 +57,8 @@ services:
       MYSQL_DATABASE: game
     volumes:
       - mysql-db:/var/lib/mysql:rw
-      - ./bd/sql/create.sql:/docker-entrypoint-initdb.d/01_create.sql:ro
-      - ./bd/sql/insert.sql:/docker-entrypoint-initdb.d/02_insert.sql:ro
+      - ./db/sql/create.sql:/docker-entrypoint-initdb.d/01_create.sql
+      - ./db/sql/insert.sql:/docker-entrypoint-initdb.d/02_insert.sql
     ports:
       - 3306:3306
 
