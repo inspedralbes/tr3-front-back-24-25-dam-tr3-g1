@@ -14,7 +14,7 @@ services:
     build:
       dockerfile: ./back/dev.Dockerfile
       context: .
-    command: sh -c "npm install && npm run index.js"
+    command: sh -c "npm install && npm run dev"
     volumes:
       - ./back:/usr/src/app
     working_dir: /usr/src/app
@@ -57,8 +57,7 @@ services:
       MYSQL_DATABASE: game
     volumes:
       - mysql-db:/var/lib/mysql:rw
-      - ./db/sql/create.sql:/docker-entrypoint-initdb.d/01_create.sql
-      - ./db/sql/insert.sql:/docker-entrypoint-initdb.d/02_insert.sql
+      - ./db/sql/gameDB.sql:/docker-entrypoint-initdb.d/01_create.sql
     ports:
       - 3306:3306
 
