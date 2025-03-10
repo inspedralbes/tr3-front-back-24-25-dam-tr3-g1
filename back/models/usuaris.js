@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from './index.js';
 
-const Usuari = sequelize.define('Usuari', {
+const Usuari = sequelize.define('USER', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -34,6 +34,8 @@ const Usuari = sequelize.define('Usuari', {
         defaultValue: 0
     }
 }, {
+    tableName: 'USUARIS',
+    freezeTableName: true, // Evita que sequelize canvie el nom de la taula a plural
     timestamps: false // Desactiva els camps createdAt i updatedAt
 });
 
