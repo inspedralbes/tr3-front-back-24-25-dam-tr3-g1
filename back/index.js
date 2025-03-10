@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import sequelize from './models/index.js';
 import Usuari from './models/usuaris.js';
+import Character from './models/character.js';
 import cors from 'cors';
 
 const app = express();
@@ -27,6 +28,47 @@ app.post('/login', async (req, res) => {
             res.status(200).json(usuari);
         } else {
             res.status(404).json({ error: 'Usuari no trobat' });
+        }
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+app.post('/characters', async (req, res) => {
+    const { name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, sprite, icon, atk, movement, health } = req.body;
+    try {
+        const newCharacter = await Character.create({ name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, sprite, icon, atk, movement, health });
+        res.status(201).json(newCharacter);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+app.put('/characters/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, sprite, icon, atk, movement, health } = req.body;
+    try {
+        const character = await Character.findByPk(id);
+        if (character) {
+            await character.update({ name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, sprite, icon, atk, movement, health });
+            res.status(200).json(character);
+        } else {
+            res.status(404).json({ error: 'Character not found' });
+        }
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+app.delete('/characters/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const character = await Character.findByPk(id);
+        if (character) {
+            await character.destroy();
+            res.status(204).send({ message: 'Character deleted' });
+        } else {
+            res.status(404).json({ error: 'Character not found' });
         }
     } catch (error) {
         res.status(400).json({ error: error.message });

@@ -19,7 +19,7 @@ services:
       - ./back:/usr/src/app
     working_dir: /usr/src/app
     ports:
-      - 3000:3000
+      - 4000:4000
     links:
       - tr-3-mysql
       - tr-3-mongodb
