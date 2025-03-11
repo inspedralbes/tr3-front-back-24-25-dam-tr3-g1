@@ -2,6 +2,11 @@ import { DataTypes } from 'sequelize';
 import sequelize from './index.js';
 
 const Character = sequelize.define('CHARACTER', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false
