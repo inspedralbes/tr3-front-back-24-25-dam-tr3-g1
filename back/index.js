@@ -1,34 +1,39 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import sequelize from './models/index.js';
-import Usuari from './models/users.js';
-import Character from './models/character.js';
-import Army from './models/armies.js';
+import defineCharacter from './models/character.js';
+import defineArmy from './models/armies.js';
 import cors from 'cors';
+import defineUser from './models/users.js';
 
 const app = express();
 const port = 4000;
+
+const Character = defineCharacter(sequelize);
+const Army = defineArmy(sequelize);
+const User = defineUser(sequelize);
 
 app.use(bodyParser.json());
 app.use(cors());
 app.post('/newUser', async (req, res) => {
     const { username, password, email } = req.body;
     try {
-        const nouUsuari = await Usuari.create({ username, password, email, army: {"unit1":'h', "unit2":'sw', "unit3":'a', "unit4":'sp'} });
-        res.status(201).json(nouUsuari);
+        const nouUser = await User.create({ username, password, email });
+        res.status(201).json(nouUser);
     } catch (error) {
         res.status(400).json({ error: error.message });
+        console.log(error);
     }
 });
 
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const usuari = await Usuari.findOne({ where: { email, password } });
-        if (usuari) {
-            res.status(200).json(usuari);
+        const User = await User.findOne({ where: { email, password } });
+        if (User) {
+            res.status(200).json(User);
         } else {
-            res.status(404).json({ error: 'Usuari no trobat' });
+            res.status(404).json({ error: 'User no trobat' });
         }
     } catch (error) {
         res.status(400).json({ error: error.message });

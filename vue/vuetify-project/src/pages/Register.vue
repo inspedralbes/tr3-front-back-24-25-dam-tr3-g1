@@ -32,6 +32,7 @@
 <script setup>
 import { reactive } from 'vue'
 import useVuelidate from '@vuelidate/core'
+import { useRouter } from 'vue-router'
 import { required, email, sameAs } from '@vuelidate/validators'
 import { useAppStore } from '@/stores/app.js'
 
@@ -56,6 +57,7 @@ const rules = {
 }
 
 const v$ = useVuelidate(rules, state)
+const router = useRouter()
 
 async function register() {
     v$.value.$touch()
@@ -72,10 +74,11 @@ async function register() {
             }
             );
             if (res.ok) {
+                console.log('User registered')
                 let data = await res.json()
                 appStore.setUsername(data.username);
                 appStore.setArmy(data.army);
-                this.$router.push({ name: 'index' })
+                router.push('/')
             }
         }
     }
