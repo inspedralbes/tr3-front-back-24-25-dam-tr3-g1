@@ -23,33 +23,8 @@ services:
       - 4000:4000
     links:
       - tr-3-mysql
-      - tr-3-mongodb
     depends_on:
-      - tr-3-mongodb
-
-  tr-3-mongodb:
-    image: mongo
-    restart: always
-    ports:
-      - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-    volumes:
-      - mongo-db:/data/db
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: root
-      ME_CONFIG_MONGODB_URL: mongodb://root:root@tr-3-mongodb:27017/
-      ME_CONFIG_BASICAUTH: false
-    depends_on:
-      - tr-3-mongodb
+      - tr-3-mysql      
   tr-3-mysql:
     image: mysql:latest
     restart: always
@@ -82,5 +57,4 @@ services:
 
 volumes:
   mysql-db:
-  mongo-db:
   data:

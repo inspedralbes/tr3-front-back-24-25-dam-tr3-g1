@@ -1,23 +1,15 @@
--- Insertar usuarios
-INSERT INTO USERS (NAME, EMAIL, PASSWORD, ELO, VICTORIES, DEFEATS, ARMYID) VALUES
-('Alice', 'alice@example.com', 'hashedpassword1', 1200, 5, 2, NULL),
-('Bob', 'bob@example.com', 'hashedpassword2', 1100, 3, 4, NULL),
-('Charlie', 'charlie@example.com', 'hashedpassword3', 1300, 10, 1, NULL);
+INSERT INTO USERS (id, username, email, password) VALUES
+(1, 'Alice', 'alice@example.com', 'hashedpassword1'),
+(2, 'Bob', 'bob@example.com', 'hashedpassword2'),
+(3, 'Charlie', 'charlie@example.com', 'hashedpassword3');
 
--- Insertar personajes
-INSERT INTO CHARACTERS (NAME, WEAPON, VS_SWORD, VS_SPEAR, VS_AXE, VS_BOW, VS_MAGIC, WINGED, SPRITE, ICON, ATK, MOVEMENT, HEALTH) VALUES
-('Julian', 'SWORD', 1.2, 0.8, 1.0, 0.5, 0.3, FALSE, '/sprites/Julian', 'julian.png', 50, 3, 100),
-('Juan', 'BOW', 0.5, 0.6, 0.7, 1.5, 0.4, FALSE, '/sprites/Juan', 'juan.png', 40, 4, 80),
-('Clemente', 'MAGIC', 0.3, 0.5, 0.6, 0.7, 1.8, FALSE, '/sprites/Clemente', 'clemente.png', 60, 2, 70),
-('Alfonso', 'SPEAR', 0.8, 1.2, 0.9, 0.4, 0.2, FALSE, '/sprites/Alfonso', 'alfonso.png', 45, 3, 90);
+INSERT INTO CHARACTERS (id, name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, sprite, icon, atk, movement, health) VALUES
+(1, 'Julian', 'SWORD', 1.2, 0.8, 1.0, 0.5, 0.3, FALSE, '/sprites/Julian', 'julian.png', 50, 3, 100),
+(2, 'Juan', 'BOW', 0.5, 0.6, 0.7, 1.5, 0.4, FALSE, '/sprites/Juan', 'juan.png', 40, 4, 80),
+(3, 'Clemente', 'MAGIC', 0.3, 0.5, 0.6, 0.7, 1.8, FALSE, '/sprites/Clemente', 'clemente.png', 60, 2, 70),
+(4, 'Alfonso', 'SPEAR', 0.8, 1.2, 0.9, 0.4, 0.2, FALSE, '/sprites/Alfonso', 'alfonso.png', 45, 3, 90);
 
--- Insertar ejércitos
-INSERT INTO ARMIES (USERID, CHARACTER1, CHARACTER2, CHARACTER3, CHARACTER4) VALUES
+INSERT INTO ARMIES (userid, unit1, unit2, unit3, unit4) VALUES
 (1, 1, 2, 3, 4),
 (2, 1, 2, 3, 4),
 (3, 1, 2, 3, 4);
-
--- Ahora que ARMIES tiene datos, actualizar ARMYID en USERS
-UPDATE USERS SET ARMYID = (SELECT ID FROM ARMIES WHERE USERID = 1) WHERE ID = 1;
-UPDATE USERS SET ARMYID = (SELECT ID FROM ARMIES WHERE USERID = 2) WHERE ID = 2;
-UPDATE USERS SET ARMYID = (SELECT ID FROM ARMIES WHERE USERID = 3) WHERE ID = 3;
