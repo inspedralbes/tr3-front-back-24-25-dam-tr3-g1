@@ -48,3 +48,5 @@ const Army = sequelize.define("ARMY", {
     freezeTableName: true,
     timestamps: false,
 });
+
+export default Army;
