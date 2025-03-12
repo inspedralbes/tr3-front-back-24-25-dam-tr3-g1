@@ -34,7 +34,8 @@ import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import useVuelidate from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'
-import {useAppStore} from '@/stores/app.js'
+import { useAppStore } from '@/stores/app.js'
+import { loginUser } from '@/services/communicationManager'
 
 const initialState = {
     email: '',
@@ -59,20 +60,14 @@ const v$ = useVuelidate(rules, state)
 async function login() {
     v$.value.$touch()
     if (v$.value.$error) return
-    const res= await fetch('http://localhost:4000/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(state)
-    })
+    const res = await loginUser(state.email, state.password)
     const data = await res.json()
     if (data.error) {
         console.error(data.error)
         return
     }
-    const user = JSON.parse(data.user);
-    appStore.setUser(user)
+    console.log(data)
+    appStore.setUser(data)
     router.push('/')
 }
 </script>

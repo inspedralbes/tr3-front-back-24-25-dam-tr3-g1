@@ -32,6 +32,7 @@ app.post('/login', async (req, res) => {
     try {
         const foundUser = await User.findOne({ where: { email, password } });
         if (foundUser) {
+            console.log(foundUser)
             res.status(200).json(foundUser);
         } else {
             res.status(404).json({ error: 'User no trobat' });

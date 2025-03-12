@@ -35,6 +35,7 @@ import useVuelidate from '@vuelidate/core'
 import { useRouter } from 'vue-router'
 import { required, email, sameAs } from '@vuelidate/validators'
 import { useAppStore } from '@/stores/app.js'
+import { createUser } from '@/services/communicationManager'
 
 const initialState = {
     username: '',
@@ -62,17 +63,8 @@ const router = useRouter()
 async function register() {
     v$.value.$touch()
     if (state.confirmPassword == state.password) {
-
-
         if (!v$.value.$invalid) {
-            const res = await fetch('http://localhost:4000/newUser', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(state)
-            }
-            );
+            const res = await createUser(state.username, state.password, state.email)
             if (res.ok) {
                 console.log('User registered')
                 let data = await res.json()
