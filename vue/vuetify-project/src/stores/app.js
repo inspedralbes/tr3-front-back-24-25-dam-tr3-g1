@@ -3,22 +3,15 @@ import { defineStore } from 'pinia'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
-    username: null,
-    army: null,
+    user: null,
   }),
 
   actions: {
-    setUsername(username) {
-      this.username = username
+    setUser(user) {
+      this.user = user
     },
-    setArmy(army) {
-      this.army = army
-    },
-    getUsername() {
-      return this.username
-    },
-    getArmy() {
-      return this.army
+    getUser() {
+      return this.user
     }
   }
 })

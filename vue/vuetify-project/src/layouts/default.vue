@@ -10,7 +10,8 @@
       <v-tab>Descarrega</v-tab>
       <v-tab>Estadístiques</v-tab>
       <v-tab>Canviar exercit</v-tab>
-      <v-tab to="/login">Login</v-tab>
+      <v-tab v-is="logueao" to="/login">Login</v-tab>
+      <v-tab v-is="logueao" to="/login">Log out</v-tab>
     </v-tabs>
   </v-app-bar>
   <v-main>
@@ -20,5 +21,14 @@
 </template>
 
 <script setup>
-  //
+import { useStore } from 'pinia';
+import { storeToRefs } from 'pinia';
+
+const logueao = ref(false);
+
+const store = useStore();
+if(storeToRefs(store.userId)){
+  console.log("User is logged in");
+  logueao.value = true;
+}
 </script>

@@ -71,10 +71,8 @@ async function login() {
         console.error(data.error)
         return
     }
-    appStore.setArmy(JSON.parse(data.army));
-    console.log('login', state)
+    const user = JSON.parse(data.user);
+    appStore.setUser(user)
     router.push('/')
-
-    
 }
 </script>

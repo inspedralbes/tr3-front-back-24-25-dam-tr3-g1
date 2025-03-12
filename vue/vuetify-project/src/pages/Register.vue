@@ -76,8 +76,8 @@ async function register() {
             if (res.ok) {
                 console.log('User registered')
                 let data = await res.json()
-                appStore.setUsername(data.username);
-                appStore.setArmy(data.army);
+                console.log(data)
+                appStore.setUser(data)
                 router.push('/')
             }
         }

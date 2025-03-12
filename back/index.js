@@ -19,6 +19,7 @@ app.post('/newUser', async (req, res) => {
     const { username, password, email } = req.body;
     try {
         const nouUser = await User.create({ username, password, email });
+        const army = await Army.create({ userid: nouUser.id, unit1: 1, unit2: 2, unit3: 3, unit4: 4 });
         res.status(201).json(nouUser);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -29,13 +30,14 @@ app.post('/newUser', async (req, res) => {
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const User = await User.findOne({ where: { email, password } });
-        if (User) {
-            res.status(200).json(User);
+        const foundUser = await User.findOne({ where: { email, password } });
+        if (foundUser) {
+            res.status(200).json(foundUser);
         } else {
             res.status(404).json({ error: 'User no trobat' });
         }
     } catch (error) {
+        console.log(error);
         res.status(400).json({ error: error.message });
     }
 });
