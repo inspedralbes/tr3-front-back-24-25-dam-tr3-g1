@@ -23,13 +23,33 @@ async function loginUser(email, password) {
 }
 
 async function createCharacter(characterData) {
+    const formData = new FormData();
+    formData.append('name', characterData.name);
+    formData.append('weapon', characterData.weapon);
+    formData.append('vs_sword', characterData.vs_sword);
+    formData.append('vs_spear', characterData.vs_spear);
+    formData.append('vs_axe', characterData.vs_axe);
+    formData.append('vs_bow', characterData.vs_bow);
+    formData.append('vs_magic', characterData.vs_magic);
+    if(characterData.winged === 'true') {
+        formData.append('winged', 1);
+    } else {
+        formData.append('winged', 0);
+    }
+    formData.append('icon', characterData.icon);
+    formData.append('atk', characterData.atk);
+    formData.append('movement', characterData.movement);
+    formData.append('health', characterData.health);
+
+    if (characterData.sprite instanceof File) {
+        formData.append('Sprite', characterData.sprite);
+    }
+
     const response = await fetch(`http://localhost:4000/characters`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(characterData)
+        body: formData
     });
+
     return response.json();
 }
 

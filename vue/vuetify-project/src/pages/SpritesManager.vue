@@ -7,7 +7,7 @@
                 <h2>Unitats</h2>
             </v-card-title>
             <v-card-text>
-                <v-btn to="/CreateSprits">Nova unitat</v-btn>
+                <v-btn to="/CreateSprites">Nova unitat</v-btn>
             <v-simple-table>
                 <thead>
                     <tr>
