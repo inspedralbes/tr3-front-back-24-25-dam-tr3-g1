@@ -36,10 +36,10 @@ async function createCharacter(characterData) {
     } else {
         formData.append('winged', 0);
     }
-    formData.append('icon', characterData.icon);
     formData.append('atk', characterData.atk);
     formData.append('movement', characterData.movement);
     formData.append('health', characterData.health);
+    formData.append('distance', characterData.distance);
 
     if (characterData.sprite instanceof File) {
         formData.append('Sprite', characterData.sprite);

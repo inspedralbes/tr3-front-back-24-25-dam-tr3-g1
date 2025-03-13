@@ -11,6 +11,7 @@ import multer from 'multer';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { Jimp } from 'jimp';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -45,6 +46,9 @@ const User = defineUser(sequelize);
 
 app.use(bodyParser.json());
 app.use(cors());
+
+app.use('/Sprites', express.static(path.join(__dirname, 'Sprites')));
+
 app.post('/newUser', async (req, res) => {
     const { username, password, email } = req.body;
     try {
@@ -78,7 +82,7 @@ app.post('/characters', upload.single('Sprite'), async (req, res) => {
         return res.status(400).json({ error: "No sprite uploaded" });
     }
 
-    const { name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, atk, movement, health } = req.body;
+    const { name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, atk, movement, health, distance } = req.body;
     const spritePath = req.file.path;
     console.log(spritePath);
 
@@ -87,34 +91,44 @@ app.post('/characters', upload.single('Sprite'), async (req, res) => {
         const extractPath = path.join(__dirname, 'Sprites', name);
         await extract(spritePath, { dir: extractPath });
 
-    //     const kid = ref(`./Sprites/${name}/standard/walk.png`)
+        // Delete ZIP file after extraction
+        await fs.promises.unlink(spritePath);
 
-    //     const icon = await Jimp.read(`./Sprites/${name}/standard/walk.png`); // Carga la imagen
+        console.log("#0")
+        const imagen = await Jimp.read(`./Sprites/${name}/standard/walk.png`); // Carga la 
+        
+        // Dimensiones de cada sprite
+        const spriteWidth = imagen.bitmap.width / 8;  // 8 columnas
+        const spriteHeight = imagen.bitmap.height / 4; // 4 filas
 
-    //     // Dimensiones de cada sprite
-    //     const spriteWidth = imagen.bitmap.width / 8;  // 8 columnas
-    //     const spriteHeight = imagen.bitmap.height / 4; // 4 filas
-    
-    //     // Coordenadas del tercer sprite de la primera columna (fila 3, columna 1)
-    //     const x = 0;
-    //     const y = 2 * spriteHeight; // Tercera fila (índice 2, porque empieza en 0)
-    
-    //     // Recortar la imagen en la posición calculada
-    //     const sprite = imagen.crop(x, y, spriteWidth, spriteHeight);
-    
-    //     // Guardar el sprite recortado
-    //     await sprite.writeAsync(`./Sprites/${name}/icon.png`);
-    //     console.log('Sprite recortado y guardado como icon.png');
+        // Coordenadas ajustadas para mejorar el recorte del icono
+        const x = 0; // Primera columna
+        const y = 2 * spriteHeight; // Tercera fila (índice 2)
+
+        // Dimensiones exactas del icono
+        const iconWidth = 72;
+        const iconHeight = 64;
+
+        // Recortar la imagen en la posición calculada
+        const obj = {h: iconHeight, w: iconWidth, x, y};
+        console.log(obj)
+        const sprite = imagen.crop(obj);
+
+        console.log("#4")
+        // Guardar el sprite recortado
+        await sprite.write(`./Sprites/${name}/icon.png`);
+        console.log('Sprite recortado y guardado como icon.png');
           
+        console.log("#5")
+        // Save character in DB
+        const newCharacter = await Character.create({ 
+            name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, distance, 
+            winged, icon: `/Sprites/${name}/icon.png`, atk, movement, health, sprite:`/Sprites/${name}`         
+        });
 
-    //     // Save character in DB
-    //     const newCharacter = await Character.create({ 
-    //         name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, 
-    //         winged, icon: kid, atk, movement, health, sprite: spritePath         
-    //     });
-
-    //     res.status(201).json(newCharacter);
+        res.status(201).json(newCharacter);
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -141,6 +155,10 @@ app.delete('/characters/:id', async (req, res) => {
         const character = await Character.findByPk(id);
         if (character) {
             await character.destroy();
+
+            const characterSpritePath = path.join(__dirname, 'Sprites', character.name);
+            fs.rmSync(characterSpritePath, { recursive: true, force: true });
+            
             res.status(204).send({ message: 'Character deleted' });
         } else {
             res.status(404).json({ error: 'Character not found' });

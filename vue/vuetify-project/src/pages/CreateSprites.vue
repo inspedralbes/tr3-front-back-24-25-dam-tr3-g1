@@ -69,11 +69,6 @@
             ></v-file-input>
 
             <v-text-field
-            label="Icon"
-            v-model="character.icon"
-            ></v-text-field>
-
-            <v-text-field
             label="Attack"
             v-model="character.atk"
             type="number"
@@ -115,7 +110,6 @@ const character = ref({
     vs_magic: 0,
     distance: 0,
     winged: false,
-    icon: '',
     atk: 0,
     movement: 0,
     health: 0

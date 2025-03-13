@@ -18,6 +18,7 @@
                         <th>Salut</th>
                         <th>Atac</th>
                         <th>Moviment</th>
+                        <th>Distance</th>
                         <th>Resistència a Espases</th>
                         <th>Resistència a Destral</th>
                         <th>Resistència a Llances</th>
@@ -28,12 +29,13 @@
                 <tbody>
                     <tr v-for="unit in units" :key="unit.id">
                         <td>{{ unit.name }}</td>
-                        <td><img :src="unit.imatge" alt="imatge unitat" style="width: 50px; height: 50px;"></td>
+                        <td><img :src="'http://localhost:4000' + unit.icon" alt="imatge unitat" style="width: 50px; height: 50px;"></td>
                         <td>{{ unit.weapon }}</td>
                         <td>{{ unit.winged ? 'Sí' : 'No' }}</td>
                         <td>{{ unit.health }}</td>
                         <td>{{ unit.atk }}</td>
                         <td>{{ unit.movement }}</td>
+                        <td>{{ unit.distance }}</td>
                         <td>{{ unit.vs_sword }}</td>
                         <td>{{ unit.vs_axe }}</td>
                         <td>{{ unit.vs_spear }}</td>
