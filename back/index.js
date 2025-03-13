@@ -6,6 +6,36 @@ import defineCharacter from './models/character.js';
 import defineArmy from './models/armies.js';
 import cors from 'cors';
 import defineUser from './models/users.js';
+import path from 'path';
+import extract from 'extract-zip';
+import multer from 'multer';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { Jimp } from 'jimp';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Configure Multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadPath = path.join(__dirname, 'Sprites');
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname); // Save with original name
+    }
+});
+
+const upload = multer({ 
+    storage,
+    fileFilter: (req, file, cb) => {
+        if (!file.originalname.startsWith('lpc')) {
+            return cb(new Error('El sprite no comienza por lpc'), false);
+        }
+        cb(null, true);
+    }
+});
 
 const app = express();
 const port = 4000;
@@ -21,7 +51,7 @@ app.post('/newUser', async (req, res) => {
     const { username, password, email } = req.body;
     try {
         const nouUser = await User.create({ username, password, email });
-        const army = await Army.create({ userid: nouUser.id, unit1: 1, unit2: 2, unit3: 3, unit4: 4 });
+        await Army.create({ userid: nouUser.id, unit1: 1, unit2: 2, unit3: 3, unit4: 4 });
         res.status(201).json(nouUser);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -34,9 +64,10 @@ app.post('/login', async (req, res) => {
     try {
         const foundUser = await User.findOne({ where: { email, password } });
         if (foundUser) {
+            console.log(foundUser)
             res.status(200).json(foundUser);
         } else {
-            res.status(404).json({ error: 'User no trobat' });
+            res.status(404).json({ error: 'User not found' });
         }
     } catch (error) {
         console.log(error);
@@ -44,13 +75,49 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.post('/characters', async (req, res) => {
-    const { name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, sprite, icon, atk, movement, health } = req.body;
+app.post('/characters', upload.single('Sprite'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: "No sprite uploaded" });
+    }
+
+    const { name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, atk, movement, health } = req.body;
+    const spritePath = req.file.path;
+    console.log(spritePath);
+
     try {
-        const newCharacter = await Character.create({ name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, sprite, icon, atk, movement, health });
-        res.status(201).json(newCharacter);
+        // Extract ZIP
+        const extractPath = path.join(__dirname, 'Sprites', name);
+        await extract(spritePath, { dir: extractPath });
+
+    //     const kid = ref(`./Sprites/${name}/standard/walk.png`)
+
+    //     const icon = await Jimp.read(`./Sprites/${name}/standard/walk.png`); // Carga la imagen
+
+    //     // Dimensiones de cada sprite
+    //     const spriteWidth = imagen.bitmap.width / 8;  // 8 columnas
+    //     const spriteHeight = imagen.bitmap.height / 4; // 4 filas
+    
+    //     // Coordenadas del tercer sprite de la primera columna (fila 3, columna 1)
+    //     const x = 0;
+    //     const y = 2 * spriteHeight; // Tercera fila (índice 2, porque empieza en 0)
+    
+    //     // Recortar la imagen en la posición calculada
+    //     const sprite = imagen.crop(x, y, spriteWidth, spriteHeight);
+    
+    //     // Guardar el sprite recortado
+    //     await sprite.writeAsync(`./Sprites/${name}/icon.png`);
+    //     console.log('Sprite recortado y guardado como icon.png');
+          
+
+    //     // Save character in DB
+    //     const newCharacter = await Character.create({ 
+    //         name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, 
+    //         winged, icon: kid, atk, movement, health, sprite: spritePath         
+    //     });
+
+    //     res.status(201).json(newCharacter);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -181,8 +248,8 @@ app.get('/getOpponent/:id', async (req, res) => {
 app.listen(port, async () => {
     try {
         await sequelize.sync();
-        console.log(`Servidor escoltant a http://localhost:${port}`);
+        console.log(`Server listening at http://localhost:${port}`);
     } catch (error) {
-        console.error('No s\'ha pogut connectar a la base de dades:', error);
+        console.error('Could not connect to the database:', error);
     }
 });

@@ -35,6 +35,10 @@ const defineCharacter = (sequelize) => {
             type: DataTypes.FLOAT,
             allowNull: false
         },
+        distance: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         winged: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
