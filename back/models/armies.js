@@ -16,7 +16,8 @@ const defineArmy = (sequelize) => {
             allowNull: false,
             references: {
                 model: 'CHARACTERS',
-                key: 'id'
+                key: 'id',
+                onDelete: 'CASCADE'
             }
         },
         unit2: {
@@ -24,7 +25,8 @@ const defineArmy = (sequelize) => {
             allowNull: false,
             references: {
                 model: 'CHARACTERS',
-                key: 'id'
+                key: 'id',
+                onDelete: 'CASCADE'
             }
         },
         unit3: {
@@ -32,7 +34,8 @@ const defineArmy = (sequelize) => {
             allowNull: false,
             references: {
                 model: 'CHARACTERS',
-                key: 'id'
+                key: 'id',
+                onDelete: 'CASCADE'
             }
         },
         unit4: {
@@ -40,7 +43,8 @@ const defineArmy = (sequelize) => {
             allowNull: false,
             references: {
                 model: 'CHARACTERS',
-                key: 'id'
+                key: 'id',
+                onDelete: 'CASCADE'
             }
         },
     }, {

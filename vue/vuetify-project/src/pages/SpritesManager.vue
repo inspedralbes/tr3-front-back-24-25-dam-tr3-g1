@@ -1,4 +1,5 @@
 <template>
+  <div>
     <h1>Gestor d'Exèrcit</h1>
 
     <div class="scroll-picker" style="display: flex; justify-content: center;">
@@ -49,6 +50,7 @@
             </v-card-text>
         </v-card>
     </div>
+  </div>
 </template>
 <script setup>
 import { onMounted, ref } from 'vue'

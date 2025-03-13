@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import sequelize from './models/index.js';
+import { Op } from 'sequelize';
 import defineCharacter from './models/character.js';
 import defineArmy from './models/armies.js';
 import cors from 'cors';
@@ -43,6 +44,7 @@ const port = 4000;
 const Character = defineCharacter(sequelize);
 const Army = defineArmy(sequelize);
 const User = defineUser(sequelize);
+let activePlayers = [1, 2, 3];
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -226,6 +228,36 @@ app.get('/armies/:id', async (req, res) => {
         } else {
             res.status(404).json({ error: 'Army not found' });
         }
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+app.get('/getOpponent/:id', async (req, res) => {
+    try {
+        const playerId = req.params.id;
+        const player = await User.findOne({ where: { id: playerId } });
+        console.log(player.username, 'busca oponent');
+        if (!player) {
+            res.status(404).json({ error: 'Player not found' });
+            return;
+        }
+        const opponents = await User.findAll({ where: { id: { [Op.ne]: playerId } }, id: activePlayers }); 
+        console.log('Oponents disponibles: ', opponents);
+        if (!opponents) {
+            res.status(404).json({ error: 'No opponents found' });
+            return;
+        }
+        let closestOpponent = null;
+        let minEloDiff = Infinity;
+        opponents.forEach(op => {
+            let eloDiff = Math.abs(player.elo - op.elo);
+            if (eloDiff < minEloDiff) {
+                minEloDiff = eloDiff;
+                closestOpponent = op;
+            }
+        });
+        res.status(200).json(closestOpponent);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
