@@ -123,15 +123,19 @@ app.post('/characters', upload.single('Sprite'), async (req, res) => {
 
         console.log("#3");
 
-        // Si es la imagen personalizada, escalar al doble de tamaño
-        if (fs.existsSync(customImagePath)) {
-            console.log('Escalando imagen personalizada');
-            sprite.scale(2);
-        }
+        await sprite.autocrop();
 
-        // Guardar el sprite final como icon.png
         await sprite.write(`./Sprites/${name}/icon.png`);
-        console.log('Sprite recortado y guardado como icon.png');
+
+        // // Si es la imagen personalizada, escalar al doble de tamaño
+        // if (fs.existsSync(customImagePath)) {
+        //     await sprite.scale(3).write(`./Sprites/${name}/icon.png`);
+        //     console.log('Sprite escalado recortado y guardado como icon.png');
+        // }
+        // else{
+        //     await sprite.write(`./Sprites/${name}/icon.png`);
+        //     console.log('Sprite recortado y guardado como icon.png');
+        // }
 
         console.log("#5");
 

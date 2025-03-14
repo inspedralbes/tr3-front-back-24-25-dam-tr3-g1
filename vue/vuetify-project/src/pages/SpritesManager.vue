@@ -30,7 +30,7 @@
                 <tbody>
                     <tr v-for="unit in units" :key="unit.id">
                         <td>{{ unit.name }}</td>
-                        <td><img :src="'http://localhost:4000' + unit.icon" alt="imatge unitat" style="width: 50px; height: 50px;"></td>
+                        <td><img :src="'http://localhost:4000' + unit.icon" alt="imatge unitat"></td>
                         <td>{{ unit.weapon }}</td>
                         <td>{{ unit.winged ? 'Sí' : 'No' }}</td>
                         <td>{{ unit.health }}</td>
