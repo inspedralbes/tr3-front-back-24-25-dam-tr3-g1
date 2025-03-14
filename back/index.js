@@ -158,7 +158,14 @@ app.put('/characters/:id', async (req, res) => {
     try {
         const character = await Character.findByPk(id);
         if (character) {
-            await character.update({ name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, sprite, icon, atk, movement, health });
+            const oldSpritePath = path.join(__dirname, 'Sprites', character.name);
+            const newSpritePath = path.join(__dirname, 'Sprites', name);
+            const newIconPath = path.join(__dirname, 'Sprites', name, 'icon.png');
+
+            if (fs.existsSync(oldSpritePath)) {
+                fs.renameSync(oldSpritePath, newSpritePath);
+            }
+            await character.update({ name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, newSpritePath, newIconPath, atk, movement, health });
             res.status(200).json(character);
         } else {
             res.status(404).json({ error: 'Character not found' });

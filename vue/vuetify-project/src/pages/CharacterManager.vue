@@ -8,7 +8,7 @@
                 <h2>Unitats</h2>
             </v-card-title>
             <v-card-text>
-                <v-btn to="/CreateSprites">Nova unitat</v-btn>
+                <v-btn to="/CreateCharacter">Nova unitat</v-btn>
             <v-simple-table>
                 <thead>
                     <tr>
@@ -74,7 +74,7 @@ function infoCharacters() {
 }
 
 function editUnit(id) {
-    router.push(`/edit/${id}`)
+    router.push(`/EditCharacter/${id}`)
 }
 
 function deleteUnitInDB(id) {

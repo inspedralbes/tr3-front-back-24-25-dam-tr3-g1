@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-form>
+        <v-form @submit.prevent="submitForm">
             <v-text-field
             label="Character Name"
             v-model="character.name"
@@ -61,14 +61,6 @@
             v-model="character.winged"
             ></v-checkbox>
 
-            <v-file-input
-                label="Sprite"
-                @change="onFileChange"
-                accept=".zip"
-                :rules="[fileNameRule]"
-                required
-            ></v-file-input>
-
             <v-text-field
             label="Attack"
             v-model="character.atk"
@@ -90,7 +82,14 @@
             required
             ></v-text-field>
 
-            <v-btn @click="submitForm" :disabled="!isFormValid">Submit</v-btn>
+            <v-file-input
+                label="Sprite"
+                @change="onFileChange"
+                accept=".zip"
+                required
+            ></v-file-input>
+
+            <v-btn v-btn type="submit">Submit</v-btn>
         </v-form>
     </v-container>
 </template>
@@ -100,10 +99,6 @@ import { useRouter } from 'vue-router'
 import { createCharacter } from '@/services/communicationManager'
 
 const router = useRouter()
-
-const fileNameRule = (value) => {
-    return value && value.name.startsWith('ipc_') || 'File name must start with "ipc_"';
-};
 
 const character = ref({
     name: '',
@@ -122,24 +117,10 @@ const character = ref({
 
 function submitForm() {
     createCharacter(character.value)
-    router.push('/SpritesManager')
+    router.push('/CharacterManager')
 }
 
 function onFileChange(event) {
     character.value.sprite = event.target.files[0];
 }
-const isFormValid = computed(() => {
-    return character.value.name &&
-           character.value.weapon &&
-           character.value.vs_sword >= 0 &&
-           character.value.vs_spear >= 0 &&
-           character.value.vs_axe >= 0 &&
-           character.value.vs_bow >= 0 &&
-           character.value.vs_magic >= 0 &&
-           character.value.distance >= 0 &&
-           character.value.atk >= 0 &&
-           character.value.movement >= 0 &&
-           character.value.health >= 0 &&
-           character.value.sprite;
-});
 </script>

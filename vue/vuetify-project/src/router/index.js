@@ -8,10 +8,21 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
+import EditCharacter from '@/pages/EditCharacter.vue' // Import the EditCharacter component
+
+// Add the new route to the routes array
+const customRoutes = [
+  {
+    path: '/EditCharacter/:id',
+    name: 'EditCharacter',
+    component: EditCharacter,
+    props: true // This allows passing the `id` parameter as a prop to the component
+  }
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: setupLayouts(routes),
+  routes: setupLayouts([...routes, ...customRoutes]), // Merge the auto-generated routes with the custom routes
 })
 
 // Workaround for https://github.com/vitejs/vite/issues/11804
