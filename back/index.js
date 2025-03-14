@@ -93,44 +93,57 @@ app.post('/characters', upload.single('Sprite'), async (req, res) => {
         const extractPath = path.join(__dirname, 'Sprites', name);
         await extract(spritePath, { dir: extractPath });
 
-        // Delete ZIP file after extraction
+        // Eliminar el archivo ZIP después de la extracción
         await fs.promises.unlink(spritePath);
 
-        console.log("#0")
-        const imagen = await Jimp.read(`./Sprites/${name}/standard/walk.png`); // Carga la 
-        
+        console.log("#0");
+        const customImagePath = `./Sprites/${name}/custom/walk_128.png`;
+        const standardImagePath = `./Sprites/${name}/standard/walk.png`;
+
+        let imagen;
+        if (fs.existsSync(customImagePath)) {
+            console.log('Custom image exists:', customImagePath);
+            imagen = await Jimp.read(customImagePath);
+        } else {
+            console.log('Custom image does not exist:', customImagePath);
+            imagen = await Jimp.read(standardImagePath);
+        }
+
         // Dimensiones de cada sprite
         const spriteWidth = imagen.bitmap.width / 8;  // 8 columnas
         const spriteHeight = imagen.bitmap.height / 4; // 4 filas
 
-        // Coordenadas ajustadas para mejorar el recorte del icono
-        const x = 0; // Primera columna
-        const y = 2 * spriteHeight; // Tercera fila (índice 2)
+        // Coordenadas para la tercera fila, primera columna
+        const x = 0;
+        const y = 2 * spriteHeight;
 
-        // Dimensiones exactas del icono
-        const iconWidth = 72;
-        const iconHeight = 64;
-
-        // Recortar la imagen en la posición calculada
-        const obj = {h: iconHeight, w: iconWidth, x, y};
-        console.log(obj)
+        // Recortar el sprite correcto
+        const obj = { h: spriteHeight, w: spriteWidth, x, y };
         const sprite = imagen.crop(obj);
 
-        console.log("#4")
-        // Guardar el sprite recortado
+        console.log("#3");
+
+        // Si es la imagen personalizada, escalar al doble de tamaño
+        if (fs.existsSync(customImagePath)) {
+            console.log('Escalando imagen personalizada');
+            sprite.scale(2);
+        }
+
+        // Guardar el sprite final como icon.png
         await sprite.write(`./Sprites/${name}/icon.png`);
         console.log('Sprite recortado y guardado como icon.png');
-          
-        console.log("#5")
-        // Save character in DB
+
+        console.log("#5");
+
+        // Guardar el personaje en la base de datos
         const newCharacter = await Character.create({ 
             name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, distance, 
-            winged, icon: `/Sprites/${name}/icon.png`, atk, movement, health, sprite:`/Sprites/${name}`         
+            winged, icon: `/Sprites/${name}/icon.png`, atk, movement, health, sprite: `/Sprites/${name}`         
         });
 
         res.status(201).json(newCharacter);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
 });
