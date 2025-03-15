@@ -97,6 +97,21 @@ async function getArmyById(id) {
     return response.json();
 }
 
+// ODOO
+
+async function createUserInOdoo(name, email) {
+    console.log(name, email);
+    const res = await fetch(`http://localhost:4001/create-client`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email })
+    });
+    console.log(res);
+    return res;
+}
+
 export {
     createUser,
     loginUser,
@@ -106,5 +121,6 @@ export {
     getCharacters,
     getCharacterById,
     updateArmy,
-    getArmyById
+    getArmyById,
+    createUserInOdoo
 };

@@ -35,7 +35,7 @@ import useVuelidate from '@vuelidate/core'
 import { useRouter } from 'vue-router'
 import { required, email, sameAs } from '@vuelidate/validators'
 import { useAppStore } from '@/stores/app.js'
-import { createUser } from '@/services/communicationManager'
+import { createUser, createUserInOdoo } from '@/services/communicationManager'
 
 const initialState = {
     username: '',
@@ -71,6 +71,7 @@ async function register() {
                 console.log(data)
                 appStore.setUser(data)
                 router.push('/')
+                await createUserInOdoo(state.username, state.email)
             }
         }
     }

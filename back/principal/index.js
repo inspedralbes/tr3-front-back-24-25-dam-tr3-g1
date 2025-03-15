@@ -49,6 +49,10 @@ let activePlayers = [1, 2, 3];
 app.use(bodyParser.json());
 app.use(cors());
 
+app.use(cors({
+    origin: 'http://localhost:5173' // Reemplaza con el origen de tu frontend
+}));
+
 app.use('/Sprites', express.static(path.join(__dirname, 'Sprites')));
 
 app.post('/newUser', async (req, res) => {
@@ -162,10 +166,13 @@ app.put('/characters/:id', async (req, res) => {
             const newSpritePath = path.join(__dirname, 'Sprites', name);
             const newIconPath = path.join(__dirname, 'Sprites', name, 'icon.png');
 
+            console.log('oldSpritePath:', oldSpritePath);
+            console.log('newSpritePath:', newSpritePath);
+
             if (fs.existsSync(oldSpritePath)) {
                 fs.renameSync(oldSpritePath, newSpritePath);
             }
-            await character.update({ name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, newSpritePath, newIconPath, atk, movement, health });
+            await character.update({ name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, sprite: `/Sprites/${name}`, icon: `/Sprites/${name}/icon.png`, atk, movement, health });
             res.status(200).json(character);
         } else {
             res.status(404).json({ error: 'Character not found' });

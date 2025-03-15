@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   tr-3-front:
     image: node:23-bookworm-slim
@@ -8,15 +10,15 @@ services:
     ports:
       - 5173:5173
     links:
-      - tr-3-back
+      - tr-3-back-principal
 
-  tr-3-back:
+  tr-3-back-principal:
     build:
-      dockerfile: ./back/dev.Dockerfile
+      dockerfile: ./back/principal/dev.Dockerfile
       context: .
     command: sh -c "npm install && npm run dev"
     volumes:
-      - ./back:/usr/src/app
+      - ./back/principal:/usr/src/app
       - ./db/sql:/usr/src/app/db/sql
     working_dir: /usr/src/app
     ports:
@@ -24,7 +26,19 @@ services:
     links:
       - tr-3-mysql
     depends_on:
-      - tr-3-mysql      
+      - tr-3-mysql
+
+  tr-3-back-odoo:
+    build:
+      dockerfile: ./back/odoo/dev.Dockerfile
+      context: .
+    command: sh -c "cp .env.DEV .env && npm install && npm run dev"
+    volumes:
+      - ./back/odoo:/usr/src/app
+    working_dir: /usr/src/app
+    ports:
+      - 4001:4001  
+
   tr-3-mysql:
     image: mysql:latest
     restart: always
@@ -36,7 +50,7 @@ services:
     ports:
       - 3306:3306
 
-  adminer:
+  tr-3-adminer:
     image: adminer
     restart: always
     ports:
@@ -46,7 +60,7 @@ services:
     depends_on:
       - tr-3-mysql
 
-  portainer:
+  tr-3-portainer:
     image: portainer/portainer-ce:latest
     ports:
       - 9443:9443
@@ -55,6 +69,33 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
+  tr-3-odoo:
+    image: odoo:17
+    depends_on:
+      - tr-3-odoo-db
+    ports:
+      - 8069:8069
+    environment:
+      - HOST=tr-3-odoo-db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./back/odoo/odooFiles/addons:/mnt/extra-addons
+      - ./back/odoo/odooFiles/config:/etc/odoo
+
+  tr-3-odoo-db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_DB: odoo
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data
+
 volumes:
   mysql-db:
   data:
+  odoo-db-data:
+  odoo-data:

@@ -9,7 +9,8 @@ const defineCharacter = (sequelize) => {
         },
         name: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         weapon: {
             type: DataTypes.ENUM('SWORD', 'SPEAR', 'AXE', 'BOW', 'MAGIC'),
