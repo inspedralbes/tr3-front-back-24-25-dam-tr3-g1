@@ -13,6 +13,9 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { Jimp } from 'jimp';
 import fs from 'fs';
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -39,7 +42,7 @@ const upload = multer({
 });
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT;
 
 const Character = defineCharacter(sequelize);
 const Army = defineArmy(sequelize);
@@ -56,14 +59,17 @@ app.use(cors({
 app.use('/Sprites', express.static(path.join(__dirname, 'Sprites')));
 
 app.post('/newUser', async (req, res) => {
-    const { username, password, email } = req.body;
+    const { id, username, password, email } = req.body;
     try {
-        const nouUser = await User.create({ username, password, email });
-        await Army.create({ userid: nouUser.id, unit1: 1, unit2: 2, unit3: 3, unit4: 4 });
+        const nouUser = await User.create({ id, username, password, email }); // Usa el ID de Odoo
+        const Armys = await Army.findAll();
+        if(Armys.length > 0){
+            await Army.create({ userid: nouUser.id, unit1: 1, unit2: 2, unit3: 3, unit4: 4 });
+        }
         res.status(201).json(nouUser);
     } catch (error) {
-        res.status(400).json({ error: error.message });
         console.log(error);
+        res.status(400).json({ error: error.message });
     }
 });
 
@@ -88,7 +94,8 @@ app.post('/characters', upload.single('Sprite'), async (req, res) => {
         return res.status(400).json({ error: "No sprite uploaded" });
     }
 
-    const { name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, atk, movement, health, distance } = req.body;
+    const { id, name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, atk, movement, health, distance } = req.body;
+    console.log("DD",req.body);
     const spritePath = req.file.path;
     console.log(spritePath);
 
@@ -145,7 +152,7 @@ app.post('/characters', upload.single('Sprite'), async (req, res) => {
 
         // Guardar el personaje en la base de datos
         const newCharacter = await Character.create({ 
-            name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, distance, 
+            id, name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, distance, 
             winged, icon: `/Sprites/${name}/icon.png`, atk, movement, health, sprite: `/Sprites/${name}`         
         });
 

@@ -65,10 +65,71 @@ app.post("/create-client", (req, res) => {
                                     res.status(500).send("Error updating client");
                                 } else {
                                     console.log("Client updated:", updateResult);
-                                    res.send(`Client created and updated with ID: ${result}`);
+                                // Fetch full client details
+                                object.methodCall(
+                                    "execute_kw",
+                                    [
+                                        db,
+                                        uid,
+                                        password,
+                                        "res.partner",
+                                        "search_read",
+                                        [[["id", "=", result]], ["id", "name", "email", "phone", "street", "city", "zip", "country_id"]],
+                                    ],
+                                    (fetchErr, fetchResult) => {
+                                        if (fetchErr) {
+                                            console.error("Error fetching client details:", fetchErr);
+                                            res.status(500).send("Error fetching client details");
+                                        } else {
+                                            console.log("Full client details fetched:", fetchResult);
+                                            res.json(fetchResult);
+                                        }
+                                    }
+                                );
                                 }
                             }
                         );
+                    }
+                }
+            );
+        }
+    );
+});
+
+app.get("/get-client/:id", (req, res) => {
+    const clientId = parseInt(req.params.id);
+
+    // Authentication
+    common.methodCall(
+        "authenticate",
+        [db, username, password, {}],
+        (error, uid) => {
+            if (error) {
+                console.error("Authentication error:", error);
+                res.status(500).send("Authentication error");
+                return;
+            }
+
+            console.log("Authenticated with UID:", uid);
+
+            // Get client details from res.partner table
+            object.methodCall(
+                "execute_kw",
+                [
+                    db,
+                    uid,
+                    password,
+                    "res.partner",
+                    "search_read",
+                    [[["id", "=", clientId]], ["id", "name", "email", "phone", "street", "city", "zip", "country_id"]],
+                ],
+                (err, result) => {
+                    if (err) {
+                        console.error("Error fetching client details:", err);
+                        res.status(500).send("Error fetching client details");
+                    } else {
+                        console.log("Client details fetched:", result);
+                        res.json(result);
                     }
                 }
             );
@@ -117,6 +178,7 @@ app.get("/get-clients", (req, res) => {
 
 app.post("/create-product", (req, res) => {
     const productData = req.body;
+    console.log(productData);
 
     // Authentication
     common.methodCall(
@@ -141,7 +203,27 @@ app.post("/create-product", (req, res) => {
                         res.status(500).send("Error creating product");
                     } else {
                         console.log("Product created with ID:", result);
-                        res.send(`Product created with ID: ${result}`);
+                        // Fetch full product details
+                        object.methodCall(
+                            "execute_kw",
+                            [
+                                db,
+                                uid,
+                                password,
+                                "product.product",
+                                "search_read",
+                                [[["id", "=", result]], ["id", "name", "list_price", "default_code", "type"]],
+                            ],
+                            (fetchErr, fetchResult) => {
+                                if (fetchErr) {
+                                    console.error("Error fetching product details:", fetchErr);
+                                    res.status(500).send("Error fetching product details");
+                                } else {
+                                    console.log("Full product details fetched:", fetchResult);
+                                    res.json(fetchResult);
+                                }
+                            }
+                        );
                     }
                 }
             );
@@ -180,6 +262,79 @@ app.get("/get-products", (req, res) => {
                         res.status(500).send("Error fetching products");
                     } else {
                         console.log("Products fetched:", result);
+                        res.json(result);
+                    }
+                }
+            );
+        }
+    );
+});
+
+app.post("/create-order", (req, res) => {
+    const orderData = req.body;
+
+    // Authentication
+    common.methodCall(
+        "authenticate",
+        [db, username, password, {}],
+        (error, uid) => {
+            if (error) {
+                console.error("Authentication error:", error);
+                res.status(500).send("Authentication error");
+                return;
+            }
+
+            console.log("Authenticated with UID:", uid);
+
+            // Create an order
+            object.methodCall(
+                "execute_kw",
+                [db, uid, password, "sale.order", "create", [orderData]],
+                (err, result) => {
+                    if (err) {
+                        console.error("Error creating order:", err);
+                        res.status(500).send("Error creating order");
+                    } else {
+                        console.log("Order created with ID:", result);
+                        res.send(`Order created with ID: ${result}`);
+                    }
+                }
+            );
+        }
+    );
+});
+
+app.get("/get-orders", (req, res) => {
+    // Authentication
+    common.methodCall(
+        "authenticate",
+        [db, username, password, {}],
+        (error, uid) => {
+            if (error) {
+                console.error("Authentication error:", error);
+                res.status(500).send("Authentication error");
+                return;
+            }
+
+            console.log("Authenticated with UID:", uid);
+
+            // Get all orders from sale.order table
+            object.methodCall(
+                "execute_kw",
+                [
+                    db,
+                    uid,
+                    password,
+                    "sale.order",
+                    "search_read",
+                    [[], ["id", "name", "partner_id", "amount_total"]],
+                ],
+                (err, result) => {
+                    if (err) {
+                        console.error("Error fetching orders:", err);
+                        res.status(500).send("Error fetching orders");
+                    } else {
+                        console.log("Orders fetched:", result);
                         res.json(result);
                     }
                 }

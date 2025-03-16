@@ -1,12 +1,13 @@
-async function createUser(username, password, email) {
+import { fr } from "vuetify/locale";
+
+async function createUser(id, username, password, email) {
     const res = await fetch(`http://localhost:4000/newUser`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username, password, email })
+        body: JSON.stringify({ id, username, password, email }) // Incluye el ID de Odoo
     });
-    console.log(res);
     return res;
 }
 
@@ -24,6 +25,7 @@ async function loginUser(email, password) {
 
 async function createCharacter(characterData) {
     const formData = new FormData();
+    formData.append('id', characterData.id);
     formData.append('name', characterData.name);
     formData.append('weapon', characterData.weapon);
     formData.append('vs_sword', characterData.vs_sword);
@@ -45,11 +47,13 @@ async function createCharacter(characterData) {
         formData.append('Sprite', characterData.sprite);
     }
 
+    console.log(formData);
+
     const response = await fetch(`http://localhost:4000/characters`, {
         method: 'POST',
         body: formData
     });
-
+    
     return response.json();
 }
 
@@ -100,16 +104,41 @@ async function getArmyById(id) {
 // ODOO
 
 async function createUserInOdoo(name, email) {
-    console.log(name, email);
     const res = await fetch(`http://localhost:4001/create-client`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name, email })
+        body: JSON.stringify({ name, email }) // Usa 'name' en lugar de 'username'
     });
-    console.log(res);
-    return res;
+
+    if (res.ok) {
+        const data = await res.json();
+        if (data.length > 0) {
+            return { ok: true, id: data[0].id }; // Asegúrate de que el ID se devuelve aquí
+        } else {
+            return { ok: false };
+        }
+    } else {
+        return { ok: false };
+    }
+}
+
+async function createCharacterInOdoo(characterData) {
+    const res = await fetch(`http://localhost:4001/create-product`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(characterData)
+    });
+
+    if (res.ok) {
+        const data = await res.json();
+        return { ok: true, id: data[0].id };
+    } else {
+        return { ok: false };
+    }
 }
 
 export {
@@ -122,5 +151,6 @@ export {
     getCharacterById,
     updateArmy,
     getArmyById,
-    createUserInOdoo
+    createUserInOdoo,
+    createCharacterInOdoo
 };

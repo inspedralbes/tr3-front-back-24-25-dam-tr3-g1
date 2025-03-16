@@ -96,7 +96,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { createCharacter } from '@/services/communicationManager'
+import { createCharacter, createCharacterInOdoo } from '@/services/communicationManager'
 
 const router = useRouter()
 
@@ -116,8 +116,33 @@ const character = ref({
 })
 
 function submitForm() {
-    createCharacter(character.value)
-    router.push('/CharacterManager')
+    const odooData = {
+        name: character.value.name,
+        type: 'consu',
+        list_price: 1,
+        standard_price: 1,
+        categ_id: 1,
+        uom_id: 1,
+        uom_po_id: 1,
+        description: `Weapon: ${character.value.weapon}, Distance: ${character.value.distance}, Winged: ${character.value.winged}`,
+        barcode: Math.floor(Math.random() * 10000000000000).toString(),
+        default_code: 'SP001',
+        weight: 1.0,
+        volume: 0.5
+    };
+
+    createCharacterInOdoo(odooData).then(res => {
+        if (res.ok) {
+            const odooCharacterId = res.id; // Obtén el ID del personaje creado en Odoo
+            console.log('Character created in Odoo', res);
+            character.value.id = odooCharacterId; // Asigna el ID de Odoo al personaje
+            createCharacter(character.value).then(() => {
+                router.push('/CharacterManager');
+            });
+        } else {
+            console.error('Failed to create character in Odoo');
+        }
+    });
 }
 
 function onFileChange(event) {

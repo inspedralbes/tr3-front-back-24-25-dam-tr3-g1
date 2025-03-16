@@ -64,23 +64,31 @@ async function register() {
     v$.value.$touch()
     if (state.confirmPassword == state.password) {
         if (!v$.value.$invalid) {
-            const res = await createUser(state.username, state.password, state.email)
+            const res = await createUserInOdoo(state.username, state.email)
             if (res.ok) {
-                console.log('User registered')
-                let data = await res.json()
-                console.log(data)
-                appStore.setUser(data)
-                router.push('/')
-                await createUserInOdoo(state.username, state.email)
+                const odooUserId = res.id; // Obtén el ID del usuario creado en Odoo
+                console.log('User created in Odoo', res);
+                const res2 = await createUser(odooUserId, state.username, state.password, state.email); // Usa el ID de Odoo
+                if (res2.ok) {
+                    console.log('User registered');
+                    let data = await res2.json();
+                    console.log(data);
+                    appStore.setUser(data);
+                    router.push('/');
+                } else {
+                    console.error('Failed to register user in MySQL:', res2.statusText);
+                }
+            } else {
+                console.error('Failed to create user in Odoo:', res.statusText);
             }
         }
-    }
-    else {
+    } else {
         console.log('Passwords do not match')
         clearPasswords();
         v$.value.$invalid
     }
 }
+
 function clearPasswords() {
     state.password = '';
     state.confirmPassword = '';
