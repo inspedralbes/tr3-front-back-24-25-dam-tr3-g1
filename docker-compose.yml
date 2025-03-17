@@ -93,8 +93,22 @@ services:
     volumes:
       - odoo-db-data:/var/lib/postgresql/data
 
+  tr-3-pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - tr-3-odoo-db
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin4
+
 volumes:
   mysql-db:
   data:
   odoo-db-data:
   odoo-data:
+  pgadmin-data:
