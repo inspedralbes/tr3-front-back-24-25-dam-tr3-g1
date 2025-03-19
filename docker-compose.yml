@@ -74,6 +74,7 @@ services:
       - tr-3-odoo-db
     ports:
       - 8069:8069
+      - 3025:587  # Open port for SMTP
     environment:
       - HOST=tr-3-odoo-db
       - USER=odoo
@@ -82,6 +83,19 @@ services:
       - odoo-data:/var/lib/odoo
       - ./back/odoo/odooFiles/addons:/mnt/extra-addons
       - ./back/odoo/odooFiles/config:/etc/odoo
+      - ./back/odoo/odooFiles/config/odoo.conf:/etc/odoo/odoo.conf
+    command: >
+      sh -c "
+      /entrypoint.sh;
+      sleep 10;
+      odoo -d odoo -i sale,invoicing,stock --without-demo=all --stop-after-init;
+      if [ $? -eq 0 ]; then
+        echo 'Modules installed successfully. Starting Odoo server...';
+        odoo -d odoo;
+      else
+        echo 'Module installation failed. Check logs for details.';
+      fi
+      "
 
   tr-3-odoo-db:
     image: postgres:15
