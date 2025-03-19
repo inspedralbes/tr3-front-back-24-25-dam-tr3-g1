@@ -74,7 +74,6 @@ services:
       - tr-3-odoo-db
     ports:
       - 8069:8069
-      - 3025:587  # Open port for SMTP
     environment:
       - HOST=tr-3-odoo-db
       - USER=odoo
