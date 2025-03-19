@@ -404,14 +404,21 @@ app.post("/create-order", (req, res) => {
                                                                                     // Send the invoice via email
                                                                                     object.methodCall(
                                                                                         "execute_kw",
-                                                                                        [db, uid, password, "account.move", "message_post", [invoiceResult, {
-                                                                                            "body": "Invoice created and sent.",
-                                                                                            "subject": "Invoice",
-                                                                                            "message_type": "comment",
-                                                                                            "subtype": "mail.mt_comment",
-                                                                                            "email_layout_xmlid": "mail.mail_notification_paynow",
-                                                                                            "notify": true
-                                                                                        }]],
+                                                                                        [
+                                                                                            db,
+                                                                                            uid,
+                                                                                            password,
+                                                                                            "account.move",
+                                                                                            "message_post",
+                                                                                            [invoiceResult],  // ID del registro
+                                                                                            {  // Parámetros en un solo objeto
+                                                                                                "body": "Invoice created and sent.",
+                                                                                                "subject": "Invoice",
+                                                                                                "message_type": "comment",
+                                                                                                "subtype_xmlid": "mail.mt_comment",  // Cambiar "subtype" por "subtype_xmlid"
+                                                                                                "email_layout_xmlid": "mail.mail_notification_paynow"
+                                                                                            }
+                                                                                        ],
                                                                                         (emailErr, emailResult) => {
                                                                                             if (emailErr) {
                                                                                                 console.error("Error sending invoice via email:", emailErr);
@@ -444,6 +451,7 @@ app.post("/create-order", (req, res) => {
         }
     );
 });
+
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
