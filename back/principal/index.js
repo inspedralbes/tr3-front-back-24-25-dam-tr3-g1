@@ -14,6 +14,7 @@ import { dirname } from 'path';
 import { Jimp } from 'jimp';
 import fs from 'fs';
 import dotenv from "dotenv";
+import { WebSocketServer } from 'ws';
 
 dotenv.config();
 
@@ -31,7 +32,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage,
     fileFilter: (req, file, cb) => {
         if (!file.originalname.startsWith('lpc')) {
@@ -47,7 +48,8 @@ const port = process.env.PORT;
 const Character = defineCharacter(sequelize);
 const Army = defineArmy(sequelize);
 const User = defineUser(sequelize);
-let activePlayers = [1, 2, 3];
+let queue = [];
+let games = {};
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -58,12 +60,112 @@ app.use(cors({
 
 app.use('/Sprites', express.static(path.join(__dirname, 'Sprites')));
 
+// Create HTTP server and Socket.io server
+const server = app.listen(port, async () => {
+    try {
+        await sequelize.sync();
+        console.log(`Server listening at http://localhost:${port}`);
+    } catch (error) {
+        console.error('Could not connect to the database:', error);
+    }
+});
+
+
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws) => {
+    console.log('A user connected');
+
+    ws.on('message', async (message) => {
+        const data = JSON.parse(message);
+
+        if (data.type === 'joinQueue') {
+            const { userId } = data;
+            try {
+                const user = await User.findByPk(userId);
+                if (!user) {
+                    ws.send(JSON.stringify({ type: 'error', message: 'Usuari no trobat' }));
+                    return;
+                }
+
+                queue.push({ ws, elo: user.elo, userId: user.id });
+
+                let bestMatch = null;
+                let bestDiff = Infinity;
+
+                for (let i = 0; i < queue.length - 1; i++) {
+                    const p1 = queue[i];
+                    const p2 = queue[queue.length - 1];
+
+                    const eloDiff = Math.abs(p1.elo - p2.elo);
+                    if (eloDiff < bestDiff) {
+                        bestDiff = eloDiff;
+                        bestMatch = { player1: p1, player2: p2 };
+                    }
+                }
+
+                if (bestMatch) {
+                    queue = queue.filter(p => p !== bestMatch.player1 && p !== bestMatch.player2);
+
+                    const room = `match_${bestMatch.player1.ws._socket.remoteAddress}_${bestMatch.player2.ws._socket.remoteAddress}`;
+                    bestMatch.player1.ws.room = room;
+                    bestMatch.player2.ws.room = room;
+
+                    games[room] = {
+                        players: [bestMatch.player1.ws, bestMatch.player2.ws],
+                        turn: bestMatch.player1.ws,
+                    };
+
+                    bestMatch.player1.ws.send(JSON.stringify({ type: 'matchFound', room, players: games[room].players.map(p => p._socket.remoteAddress), currentTurn: games[room].turn._socket.remoteAddress }));
+                    bestMatch.player2.ws.send(JSON.stringify({ type: 'matchFound', room, players: games[room].players.map(p => p._socket.remoteAddress), currentTurn: games[room].turn._socket.remoteAddress }));
+
+                    console.log(`Partida creada: ${bestMatch.player1.userId} vs ${bestMatch.player2.userId} a la sala ${room}`);
+                }
+            } catch (error) {
+                console.error("Error en matchmaking:", error);
+            }
+        } else if (data.type === 'makeMove') {
+            const { room, move } = data;
+            if (games[room] && games[room].turn === ws) {
+                games[room].players.forEach(player => {
+                    if (player !== ws) {
+                        player.send(JSON.stringify({ type: 'opponentMove', move }));
+                    }
+                });
+
+                games[room].turn = games[room].players.find(p => p !== ws);
+
+                games[room].players.forEach(player => {
+                    player.send(JSON.stringify({ type: 'turnUpdate', currentTurn: games[room].turn._socket.remoteAddress }));
+                });
+            }
+        }
+    });
+
+    ws.on('close', () => {
+        queue = queue.filter((player) => player.ws !== ws);
+
+        Object.keys(games).forEach((room) => {
+            if (games[room].players.includes(ws)) {
+                games[room].players.forEach(player => {
+                    if (player !== ws) {
+                        player.send(JSON.stringify({ type: 'gameOver', reason: 'opponentDisconnected' }));
+                    }
+                });
+                delete games[room];
+            }
+        });
+
+        console.log('User disconnected');
+    });
+});
+
 app.post('/newUser', async (req, res) => {
     const { id, username, password, email } = req.body;
     try {
         const nouUser = await User.create({ id, username, password, email }); // Usa el ID de Odoo
         const Armys = await Army.findAll();
-        if(Armys.length > 0){
+        if (Armys.length > 0) {
             await Army.create({ userid: nouUser.id, unit1: 1, unit2: 2, unit3: 3, unit4: 4 });
         }
         res.status(201).json(nouUser);
@@ -95,7 +197,7 @@ app.post('/characters', upload.single('Sprite'), async (req, res) => {
     }
 
     const { id, name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, winged, atk, movement, health, distance } = req.body;
-    console.log("DD",req.body);
+    console.log("DD", req.body);
     const spritePath = req.file.path;
     console.log(spritePath);
 
@@ -151,9 +253,9 @@ app.post('/characters', upload.single('Sprite'), async (req, res) => {
         console.log("#5");
 
         // Guardar el personaje en la base de datos
-        const newCharacter = await Character.create({ 
-            id, name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, distance, 
-            winged, icon: `/Sprites/${name}/icon.png`, atk, movement, health, sprite: `/Sprites/${name}`         
+        const newCharacter = await Character.create({
+            id, name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, distance,
+            winged, icon: `/Sprites/${name}/icon.png`, atk, movement, health, sprite: `/Sprites/${name}`
         });
 
         res.status(201).json(newCharacter);
@@ -198,7 +300,7 @@ app.delete('/characters/:id', async (req, res) => {
 
             const characterSpritePath = path.join(__dirname, 'Sprites', character.name);
             fs.rmSync(characterSpritePath, { recursive: true, force: true });
-            
+
             res.status(204).send({ message: 'Character deleted' });
         } else {
             res.status(404).json({ error: 'Character not found' });
@@ -271,41 +373,50 @@ app.get('/armies/:id', async (req, res) => {
     }
 });
 
-app.get('/getOpponent/:id', async (req, res) => {
-    try {
-        const playerId = req.params.id;
-        const player = await User.findOne({ where: { id: playerId } });
-        console.log(player.username, 'busca oponent');
-        if (!player) {
-            res.status(404).json({ error: 'Player not found' });
-            return;
-        }
-        const opponents = await User.findAll({ where: { id: { [Op.ne]: playerId } }, id: activePlayers }); 
-        console.log('Oponents disponibles: ', opponents);
-        if (!opponents) {
-            res.status(404).json({ error: 'No opponents found' });
-            return;
-        }
-        let closestOpponent = null;
-        let minEloDiff = Infinity;
-        opponents.forEach(op => {
-            let eloDiff = Math.abs(player.elo - op.elo);
-            if (eloDiff < minEloDiff) {
-                minEloDiff = eloDiff;
-                closestOpponent = op;
-            }
-        });
-        res.status(200).json(closestOpponent);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
+// app.get('/getOpponent/:id', async (req, res) => {
+//     try {
+//         const playerId = req.params.id;
+//         const player = await User.findOne({ where: { id: playerId } });
+//         console.log(player.username, 'busca oponent');
+//         if (!player) {
+//             res.status(404).json({ error: 'Player not found' });
+//             return;
+//         }
+//         const opponents = await User.findAll({ where: { id: { [Op.ne]: playerId } }, id: activePlayers });
+//         console.log('Oponents disponibles: ', opponents);
+//         if (!opponents) {
+//             res.status(404).json({ error: 'No opponents found' });
+//             return;
+//         }
+//         let closestOpponent = null;
+//         let minEloDiff = Infinity;
+//         opponents.forEach(op => {
+//             let eloDiff = Math.abs(player.elo - op.elo);
+//             if (eloDiff < minEloDiff) {
+//                 minEloDiff = eloDiff;
+//                 closestOpponent = op;
+//             }
+//         });
+//         console.log('Oponente más cercano: ', closestOpponent);
+//         const game = { id: uuidv4(), player1: player, player2: closestOpponent };
+//         activeGames.push(game);
 
-app.listen(port, async () => {
-    try {
-        await sequelize.sync();
-        console.log(`Server listening at http://localhost:${port}`);
-    } catch (error) {
-        console.error('Could not connect to the database:', error);
-    }
-});
+//         res.status(200).json(closestOpponent);
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// });
+
+// app.get('/getPlayingUsers/:id', async (req, res) => {
+//     try {
+//         const userId = id;
+//         const game = activeGames.find(g => g.player1.id === userId || g.player2.id === userId);
+//         if (!game) {
+//             res.status(404).json({ error: 'Game not found' });
+//             return;
+//         }
+//         res.status(200).json(game);
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// });
