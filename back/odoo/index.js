@@ -410,12 +410,13 @@ app.post("/create-order", (req, res) => {
                                                                                             password,
                                                                                             "account.move",
                                                                                             "message_post",
-                                                                                            [invoiceResult],  // ID del registro
-                                                                                            {  // Parámetros en un solo objeto
-                                                                                                "body": "Invoice created and sent.",
-                                                                                                "subject": "Invoice",
-                                                                                                "message_type": "comment",
-                                                                                                "subtype_xmlid": "mail.mt_comment",  // Cambiar "subtype" por "subtype_xmlid"
+                                                                                            [invoiceResult],  // ID of the record
+                                                                                            // Parameters in a single object
+                                                                                            {
+                                                                                            "body": `Invoice Details:\n\nID: ${fetchResult[0].id}\nName: ${fetchResult[0].name}\nTotal Amount: ${fetchResult[0].amount_total}\nState: ${fetchResult[0].state}\n\nItems:\n${orderLineResult.map(line => `Product: ${line.product_id[1]}, Quantity: ${line.product_uom_qty}, Unit Price: ${line.price_unit}`).join('\n')}`,
+                                                                                            "subject": "Invoice",
+                                                                                            "message_type": "comment",
+                                                                                            "subtype_xmlid": "mail.mt_comment",  // Change "subtype" to "subtype_xmlid"
                                                                                                 "email_layout_xmlid": "mail.mail_notification_paynow"
                                                                                             }
                                                                                         ],
