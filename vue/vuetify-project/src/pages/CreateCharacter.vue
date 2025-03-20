@@ -136,6 +136,9 @@ function submitForm() {
             const odooCharacterId = res.id; // Obtén el ID del personaje creado en Odoo
             console.log('Character created in Odoo', res);
             character.value.id = odooCharacterId; // Asigna el ID de Odoo al personaje
+            if(character.value.winged){
+                character.value.winged = 1;
+            }
             createCharacter(character.value).then(() => {
                 router.push('/CharacterManager');
             });

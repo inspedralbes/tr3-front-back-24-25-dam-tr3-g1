@@ -33,7 +33,7 @@ async function createCharacter(characterData) {
     formData.append('vs_axe', characterData.vs_axe);
     formData.append('vs_bow', characterData.vs_bow);
     formData.append('vs_magic', characterData.vs_magic);
-    if(characterData.winged === 'true') {
+    if(characterData.winged === 'true' || characterData.winged === true || characterData.winged === 1) {
         formData.append('winged', 1);
     } else {
         formData.append('winged', 0);
