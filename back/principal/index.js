@@ -74,13 +74,14 @@ const server = app.listen(port, async () => {
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws) => {
-    console.log('A user connected');
-
+    console.log('A user connected');    
     ws.on('message', async (message) => {
         const data = JSON.parse(message);
 
         if (data.type === 'joinQueue') {
             const { userId } = data;
+            console.log('User', userId, 'joined the queue');
+            ws.send(JSON.stringify({ type: 'queueJoined' }));
             try {
                 const user = await User.findByPk(userId);
                 if (!user) {
@@ -89,6 +90,7 @@ wss.on('connection', (ws) => {
                 }
 
                 queue.push({ ws, elo: user.elo, userId: user.id });
+                console.log('Queue: ', queue);
 
                 let bestMatch = null;
                 let bestDiff = Infinity;
@@ -106,7 +108,7 @@ wss.on('connection', (ws) => {
 
                 if (bestMatch) {
                     queue = queue.filter(p => p !== bestMatch.player1 && p !== bestMatch.player2);
-
+                    console.log('Match found:', bestMatch.player1.userId, 'vs', bestMatch.player2.userId);
                     const room = `match_${bestMatch.player1.ws._socket.remoteAddress}_${bestMatch.player2.ws._socket.remoteAddress}`;
                     bestMatch.player1.ws.room = room;
                     bestMatch.player2.ws.room = room;
@@ -126,6 +128,7 @@ wss.on('connection', (ws) => {
             }
         } else if (data.type === 'makeMove') {
             const { room, move } = data;
+            console.log('Move received:', move);
             if (games[room] && games[room].turn === ws) {
                 games[room].players.forEach(player => {
                     if (player !== ws) {
