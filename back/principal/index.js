@@ -449,6 +449,50 @@ app.post("/buyCharacter", async (req, res) => {
   }
 });
 
+app.get("/getCharactersNotOwned/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+    const charactersOwned = Inventory.findAll({
+      where: { id_user: user.id },
+    });
+    const characterIds = (await charactersOwned).map((inventory) => inventory.id_character);
+    const charactersNotOwned = await Character.findAll({
+      where: { id: { [Op.notIn]: characterIds } },
+    });
+    console.log("charactersNotOwned",charactersNotOwned);
+  
+    res.status(200).json(charactersNotOwned);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get("/getCharactersOwned/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+    const charactersOwned = Inventory.findAll({
+      where: { id_user: user.id },
+    });
+    const characterIds = (await charactersOwned).map((inventory) => inventory.id_character);
+    const ownedCharacters = await Character.findAll({
+      where: { id: characterIds },
+    });
+    res.status(200).json(ownedCharacters);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 app.listen(port, async () => {
   try {
     await sequelize.sync();
