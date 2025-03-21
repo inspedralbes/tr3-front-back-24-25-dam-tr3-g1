@@ -4,6 +4,7 @@ import path from 'path';
 import defineCharacter from './character.js';
 import defineUsuari from './users.js';
 import defineArmy from './armies.js';
+import defineInventory from './Inventory.js';
 
 const sequelize = new Sequelize('game', 'root', 'root', {
     host: 'host.docker.internal',
@@ -16,6 +17,7 @@ const sequelize = new Sequelize('game', 'root', 'root', {
 defineCharacter(sequelize);
 defineUsuari(sequelize);
 defineArmy(sequelize);
+defineInventory(sequelize);
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const sqlFilePath = path.join(__dirname, '..', 'db', 'sql', 'gameDB.sql');

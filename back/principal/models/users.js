@@ -32,7 +32,11 @@ const defineUsuari = (sequelize) => {
         defeats: {
             type: DataTypes.INTEGER,
             defaultValue: 0
-        }
+        },
+        points: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
+        },
     }, {
         tableName: 'USERS',
         freezeTableName: true,

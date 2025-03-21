@@ -81,7 +81,12 @@
             type="number"
             required
             ></v-text-field>
-
+            <v-text-field
+                label="Price"
+                v-model="character.price"
+                type="number"
+                required
+            ></v-text-field>
             <v-file-input
                 label="Sprite"
                 @change="onFileChange"
@@ -112,15 +117,16 @@ const character = ref({
     winged: false,
     atk: 0,
     movement: 0,
-    health: 0
+    health: 0,
+    price: 0,
 })
 
 function submitForm() {
     const odooData = {
         name: character.value.name,
         type: 'consu',
-        list_price: 1,
-        standard_price: 1,
+        list_price: character.value.price,
+        standard_price: character.value.price,
         categ_id: 1,
         uom_id: 1,
         uom_po_id: 1,
@@ -138,6 +144,8 @@ function submitForm() {
             character.value.id = odooCharacterId; // Asigna el ID de Odoo al personaje
             if(character.value.winged){
                 character.value.winged = 1;
+            } else {
+                character.value.winged = 0;
             }
             createCharacter(character.value).then(() => {
                 router.push('/CharacterManager');

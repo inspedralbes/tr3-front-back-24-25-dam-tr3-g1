@@ -42,7 +42,7 @@ async function createCharacter(characterData) {
     formData.append('movement', characterData.movement);
     formData.append('health', characterData.health);
     formData.append('distance', characterData.distance);
-
+    formData.append('price', characterData.price);
     if (characterData.sprite instanceof File) {
         formData.append('Sprite', characterData.sprite);
     }

@@ -1,0 +1,101 @@
+{
+  "bodyTypeName": "male",
+  "url": "https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/#?body=Skeleton_skeleton&head=Jack_O_Lantern_jack&hat=Bicorne_Athwart_black&legs=Striped_Formal_Pants_black&weapon=Slingshot_slingshot&weapon_magic_crystal=none_Crystal",
+  "spritesheets": "https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/spritesheets/",
+  "version": 1,
+  "datetime": "10/3/2025, 8:46:16",
+  "credits": [
+    {
+      "fileName": "body/bodies/skeleton/skeleton.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "bluecarrot16,Johannes Sjölund (wulax),Stephen Challener (Redshrike)",
+      "urls": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles,https://opengameart.org/content/lpc-medieval-fantasy-character-sprites,https://opengameart.org/content/lpc-skeleton,https://opengameart.org/content/lpc-character-bases",
+      "notes": ""
+    },
+    {
+      "fileName": "head/heads/jack/adult/jack.png",
+      "licenses": "CC-BY-SA 3.0,GPL 3.0",
+      "authors": "bluecarrot16,Joshua Taylor",
+      "urls": "https://opengameart.org/content/fruit-and-veggie-inventory,https://opengameart.org/content/lpc-folk",
+      "notes": "original pumpkin by Joshua Taylor, modified to head by bluecarrot16"
+    },
+    {
+      "fileName": "hat/pirate/bicorne/athwart/basic/adult/black.png",
+      "licenses": "OGA-BY 3.0",
+      "authors": "bluecarrot16",
+      "urls": "https://opengameart.org/content/lpc-pirates,https://opengameart.org/content/lpc-expanded-hats-facial-helmets",
+      "notes": "Pirate Hat by Bluecarrot16, layers and added animations by JaidynReiman"
+    },
+    {
+      "fileName": "legs/formal_striped/male/black.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "bluecarrot16,JaidynReiman,ElizaWy,Johannes Sjölund (wulax),Stephen Challener (Redshrike)",
+      "urls": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles,https://opengameart.org/content/lpc-medieval-fantasy-character-sprites,https://opengameart.org/content/lpc-2-characters,https://opengameart.org/content/lpc-gentleman,https://opengameart.org/content/lpc-expanded-pants",
+      "notes": "Original pants by Stephen Challener (Redshrike), thrust/shoot bases by Wulax, Striped Formal Pants by Bluecarrot16, climb/jump/run/sit/emotes/revised combat by JaidynReiman"
+    },
+    {
+      "fileName": "weapon/ranged/slingshot/foreground/slingshot.png",
+      "licenses": "OGA-BY 3.0+,GPL 3.0,CC-BY 4.0",
+      "authors": "bluecarrot16",
+      "urls": "https://opengameart.org/content/lpc-more-weapons",
+      "notes": ""
+    },
+    {
+      "fileName": "weapon/ranged/slingshot/background/slingshot.png",
+      "licenses": "OGA-BY 3.0+,GPL 3.0,CC-BY 4.0",
+      "authors": "bluecarrot16",
+      "urls": "https://opengameart.org/content/lpc-more-weapons",
+      "notes": ""
+    }
+  ],
+  "layers": [
+    {
+      "fileName": "weapon/ranged/slingshot/background/slingshot.png",
+      "zPos": 9,
+      "parentName": "weapon",
+      "name": "Slingshot",
+      "variant": "slingshot",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "body/bodies/skeleton/skeleton.png",
+      "zPos": 10,
+      "parentName": "body",
+      "name": "Skeleton",
+      "variant": "skeleton",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "legs/formal_striped/male/black.png",
+      "zPos": 20,
+      "parentName": "legs",
+      "name": "Striped_Formal_Pants",
+      "variant": "black",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "head/heads/jack/adult/jack.png",
+      "zPos": 100,
+      "parentName": "head",
+      "name": "Jack_O_Lantern",
+      "variant": "jack",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "hat/pirate/bicorne/athwart/basic/adult/black.png",
+      "zPos": 130,
+      "parentName": "hat",
+      "name": "Bicorne_Athwart",
+      "variant": "black",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "weapon/ranged/slingshot/foreground/slingshot.png",
+      "zPos": 140,
+      "parentName": "weapon",
+      "name": "Slingshot",
+      "variant": "slingshot",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    }
+  ]
+}

@@ -18,7 +18,7 @@ const object = xmlrpc.createClient({ url: `${url}/xmlrpc/2/object` });
 
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5173'
+    origin: "*"
 }));
 
 app.post("/create-client", (req, res) => {
@@ -313,7 +313,8 @@ app.get("/get-orders", (req, res) => {
 
 app.post("/create-order", (req, res) => {
     const orderData = req.body;
-
+    console.log("Order data:--------------------------------------------------------------------------------");
+    console.log(orderData);
     // Authentication
     common.methodCall(
         "authenticate",

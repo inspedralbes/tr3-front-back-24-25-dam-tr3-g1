@@ -63,6 +63,10 @@ const defineCharacter = (sequelize) => {
         health: {
             type: DataTypes.INTEGER,
             allowNull: false
+        },
+        price: {
+            type : DataTypes.INTEGER,
+            allowNull: false
         }
     }, {
         tableName: 'CHARACTERS',
