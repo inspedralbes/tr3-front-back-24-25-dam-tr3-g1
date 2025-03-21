@@ -392,10 +392,10 @@ app.post("/buyCharacter", async (req, res) => {
       res.status(400).json({ error: "Not enough points" });
       return;
     } else {
-    //   const existingInventory = await Inventory.findOne({
-    //     where: { id_user: user.id, id_character: character.id },
-    //   });
-    const existingInventory=false;
+      const existingInventory = await Inventory.findOne({
+        where: { id_user: user.id, id_character: character.id },
+      });
+
       if (!existingInventory) {
         await Inventory.create({ id_user, id_character });
         user.points -= character.price;
