@@ -1,7 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import sequelize from './models/index.js';
-import { Op } from 'sequelize';
 import defineCharacter from './models/character.js';
 import defineArmy from './models/armies.js';
 import cors from 'cors';
@@ -117,10 +116,12 @@ wss.on('connection', (ws) => {
                         players: [bestMatch.player1.ws, bestMatch.player2.ws],
                         turn: bestMatch.player1.ws,
                     };
+                    const player1User = await User.findByPk(bestMatch.player1.userId);
+                    const player2User = await User.findByPk(bestMatch.player2.userId);
 
-                    bestMatch.player1.ws.send(JSON.stringify({ type: 'matchFound', room, players: games[room].players.map(p => p._socket.remoteAddress), currentTurn: games[room].turn._socket.remoteAddress }));
-                    bestMatch.player2.ws.send(JSON.stringify({ type: 'matchFound', room, players: games[room].players.map(p => p._socket.remoteAddress), currentTurn: games[room].turn._socket.remoteAddress }));
-
+                    bestMatch.player1.ws.send(JSON.stringify({ type: 'matchFound', room, players: [player1User, player2User] }));
+                    bestMatch.player2.ws.send(JSON.stringify({ type: 'matchFound', room, players: [player1User, player2User] }));
+                    
                     console.log(`Partida creada: ${bestMatch.player1.userId} vs ${bestMatch.player2.userId} a la sala ${room}`);
                 }
             } catch (error) {
@@ -375,51 +376,3 @@ app.get('/armies/:id', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
-
-// app.get('/getOpponent/:id', async (req, res) => {
-//     try {
-//         const playerId = req.params.id;
-//         const player = await User.findOne({ where: { id: playerId } });
-//         console.log(player.username, 'busca oponent');
-//         if (!player) {
-//             res.status(404).json({ error: 'Player not found' });
-//             return;
-//         }
-//         const opponents = await User.findAll({ where: { id: { [Op.ne]: playerId } }, id: activePlayers });
-//         console.log('Oponents disponibles: ', opponents);
-//         if (!opponents) {
-//             res.status(404).json({ error: 'No opponents found' });
-//             return;
-//         }
-//         let closestOpponent = null;
-//         let minEloDiff = Infinity;
-//         opponents.forEach(op => {
-//             let eloDiff = Math.abs(player.elo - op.elo);
-//             if (eloDiff < minEloDiff) {
-//                 minEloDiff = eloDiff;
-//                 closestOpponent = op;
-//             }
-//         });
-//         console.log('Oponente más cercano: ', closestOpponent);
-//         const game = { id: uuidv4(), player1: player, player2: closestOpponent };
-//         activeGames.push(game);
-
-//         res.status(200).json(closestOpponent);
-//     } catch (error) {
-//         res.status(400).json({ error: error.message });
-//     }
-// });
-
-// app.get('/getPlayingUsers/:id', async (req, res) => {
-//     try {
-//         const userId = id;
-//         const game = activeGames.find(g => g.player1.id === userId || g.player2.id === userId);
-//         if (!game) {
-//             res.status(404).json({ error: 'Game not found' });
-//             return;
-//         }
-//         res.status(200).json(game);
-//     } catch (error) {
-//         res.status(400).json({ error: error.message });
-//     }
-// });
