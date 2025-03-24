@@ -25,6 +25,7 @@
                         <th>Resistència a Llances</th>
                         <th>Resistència a Arcs</th>
                         <th>Resistència a Màgia</th>
+                        <th>Preu</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,6 +43,7 @@
                         <td>{{ unit.vs_spear }}</td>
                         <td>{{ unit.vs_bow }}</td>
                         <td>{{ unit.vs_magic }}</td>
+                        <td>{{ unit.price }}</td>
                         <td><v-btn @click="editUnit(unit.id)">Editar</v-btn></td>
                         <td><v-btn @click="deleteUnitInDB(unit.id)">Eliminar</v-btn></td>
                     </tr>

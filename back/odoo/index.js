@@ -18,7 +18,7 @@ const object = xmlrpc.createClient({ url: `${url}/xmlrpc/2/object` });
 
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5173'
+    origin: "*"
 }));
 
 app.post("/create-client", (req, res) => {
@@ -270,39 +270,7 @@ app.get("/get-products", (req, res) => {
     );
 });
 
-app.post("/create-order", (req, res) => {
-    const orderData = req.body;
 
-    // Authentication
-    common.methodCall(
-        "authenticate",
-        [db, username, password, {}],
-        (error, uid) => {
-            if (error) {
-                console.error("Authentication error:", error);
-                res.status(500).send("Authentication error");
-                return;
-            }
-
-            console.log("Authenticated with UID:", uid);
-
-            // Create an order
-            object.methodCall(
-                "execute_kw",
-                [db, uid, password, "sale.order", "create", [orderData]],
-                (err, result) => {
-                    if (err) {
-                        console.error("Error creating order:", err);
-                        res.status(500).send("Error creating order");
-                    } else {
-                        console.log("Order created with ID:", result);
-                        res.send(`Order created with ID: ${result}`);
-                    }
-                }
-            );
-        }
-    );
-});
 
 app.get("/get-orders", (req, res) => {
     // Authentication
@@ -342,6 +310,150 @@ app.get("/get-orders", (req, res) => {
         }
     );
 });
+
+app.post("/create-order", (req, res) => {
+    const orderData = req.body;
+    console.log("Order data:--------------------------------------------------------------------------------");
+    console.log(orderData);
+    // Authentication
+    common.methodCall(
+        "authenticate",
+        [db, username, password, {}],
+        (error, uid) => {
+            if (error) {
+                console.error("Authentication error:", error);
+                res.status(500).send("Authentication error");
+                return;
+            }
+
+            console.log("Authenticated with UID:", uid);
+
+            // Create an order
+            object.methodCall(
+                "execute_kw",
+                [db, uid, password, "sale.order", "create", [orderData]],
+                (err, result) => {
+                    if (err) {
+                        console.error("Error creating order:", err);
+                        res.status(500).send("Error creating order");
+                    } else {
+                        console.log("Order created with ID:", result);
+
+                        // Create an invoice for the order
+                        object.methodCall(
+                            "execute_kw",
+                            [db, uid, password, "sale.order", "action_confirm", [[result]]],
+                            (confirmErr, confirmResult) => {
+                                if (confirmErr) {
+                                    console.error("Error confirming order:", confirmErr);
+                                    res.status(500).send("Error confirming order");
+                                } else {
+                                    console.log("Order confirmed with ID:", confirmResult);
+                                    // Ensure order lines are set before creating invoice
+                                    object.methodCall(
+                                        "execute_kw",
+                                        [db, uid, password, "sale.order.line", "search_read", [[["order_id", "=", result]], ["id", "product_id", "product_uom_qty", "price_unit"]]],
+                                        (orderLineErr, orderLineResult) => {
+                                            if (orderLineErr || orderLineResult.length === 0) {
+                                                console.error("Error fetching order lines:", orderLineErr || "No order lines found");
+                                                res.status(500).send("Error fetching order lines");
+                                            } else {
+                                                object.methodCall(
+                                                    "execute_kw",
+                                                    [db, uid, password, "account.move", "create", [[{
+                                                        "move_type": "out_invoice",
+                                                        "invoice_origin": result,
+                                                        "partner_id": orderData.partner_id,
+                                                        "invoice_line_ids": orderLineResult.map(line => [0, 0, {
+                                                            "product_id": line.product_id[0],
+                                                            "quantity": line.product_uom_qty,
+                                                            "price_unit": line.price_unit
+                                                        }])
+                                                    }]]],
+                                                    (invoiceErr, invoiceResult) => {
+                                                        if (invoiceErr) {
+                                                            console.error("Error creating invoice:", invoiceErr);
+                                                            res.status(500).send("Error creating invoice");
+                                                        } else {
+                                                            console.log("Invoice created with ID:", invoiceResult);
+                                                            // Fetch full invoice details
+                                                            object.methodCall(
+                                                                "execute_kw",
+                                                                [
+                                                                    db,
+                                                                    uid,
+                                                                    password,
+                                                                    "account.move",
+                                                                    "search_read",
+                                                                    [[["id", "=", invoiceResult]], ["id", "name", "amount_total", "state"]],
+                                                                ],
+                                                                (fetchErr, fetchResult) => {
+                                                                    if (fetchErr) {
+                                                                        console.error("Error fetching invoice details:", fetchErr);
+                                                                        res.status(500).send("Error fetching invoice details");
+                                                                    } else {
+                                                                        console.log("Full invoice details fetched:", fetchResult);
+                                                                        // Simulate confirm button click
+                                                                        object.methodCall(
+                                                                            "execute_kw",
+                                                                            [db, uid, password, "account.move", "action_post", [invoiceResult]],
+                                                                            (confirmErr, confirmResult) => {
+                                                                                if (confirmErr) {
+                                                                                    console.error("Error confirming invoice:", confirmErr);
+                                                                                    res.status(500).send("Error confirming invoice");
+                                                                                } else {
+                                                                                    // Send the invoice via email
+                                                                                    object.methodCall(
+                                                                                        "execute_kw",
+                                                                                        [
+                                                                                            db,
+                                                                                            uid,
+                                                                                            password,
+                                                                                            "account.move",
+                                                                                            "message_post",
+                                                                                            [invoiceResult],  // ID of the record
+                                                                                            // Parameters in a single object
+                                                                                            {
+                                                                                            "body": `Invoice Details:\n\nID: ${fetchResult[0].id}\nName: ${fetchResult[0].name}\nTotal Amount: ${fetchResult[0].amount_total}\nState: ${fetchResult[0].state}\n\nItems:\n${orderLineResult.map(line => `Product: ${line.product_id[1]}, Quantity: ${line.product_uom_qty}, Unit Price: ${line.price_unit}`).join('\n')}`,
+                                                                                            "subject": "Invoice",
+                                                                                            "message_type": "comment",
+                                                                                            "subtype_xmlid": "mail.mt_comment",  // Change "subtype" to "subtype_xmlid"
+                                                                                                "email_layout_xmlid": "mail.mail_notification_paynow"
+                                                                                            }
+                                                                                        ],
+                                                                                        (emailErr, emailResult) => {
+                                                                                            if (emailErr) {
+                                                                                                console.error("Error sending invoice via email:", emailErr);
+                                                                                                res.status(500).send("Error sending invoice via email");
+                                                                                            } else {
+                                                                                                console.log("Invoice sent via email:", emailResult);
+                                                                                                res.json(fetchResult);
+                                                                                            }
+                                                                                        }
+                                                                                    );
+                                                                                }
+                                                                            }
+                                                                        );
+                                                                    }
+                                                                }
+                                                            );
+                                                            
+                                                        }
+                                                    }
+                                                );
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        );
+                    }
+                }
+            );
+        }
+    );
+});
+
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);

@@ -33,7 +33,7 @@ async function createCharacter(characterData) {
     formData.append('vs_axe', characterData.vs_axe);
     formData.append('vs_bow', characterData.vs_bow);
     formData.append('vs_magic', characterData.vs_magic);
-    if(characterData.winged === 'true') {
+    if(characterData.winged === 'true' || characterData.winged === true || characterData.winged === 1) {
         formData.append('winged', 1);
     } else {
         formData.append('winged', 0);
@@ -42,7 +42,7 @@ async function createCharacter(characterData) {
     formData.append('movement', characterData.movement);
     formData.append('health', characterData.health);
     formData.append('distance', characterData.distance);
-
+    formData.append('price', characterData.price);
     if (characterData.sprite instanceof File) {
         formData.append('Sprite', characterData.sprite);
     }

@@ -1,18 +1,100 @@
 <template>
     <v-container>
         <v-form @submit.prevent="updateCharacterInVue">
-            <v-text-field v-model="character.name" label="Name" required></v-text-field>
-            <v-select v-model="character.weapon" :items="weapons" label="Weapon" required></v-select>
-            <v-text-field v-model="character.atk" label="Attack" type="number" required></v-text-field>
-            <v-text-field v-model="character.movement" label="Movement" type="number" required></v-text-field>
-            <v-text-field v-model="character.health" label="Health" type="number" required></v-text-field>
-            <v-text-field v-model="character.vs_sword" label="Vs Sword" type="number" required></v-text-field>
-            <v-text-field v-model="character.vs_spear" label="Vs Spear" type="number" required></v-text-field>
-            <v-text-field v-model="character.vs_axe" label="Vs Axe" type="number" required></v-text-field>
-            <v-text-field v-model="character.vs_bow" label="Vs Bow" type="number" required></v-text-field>
-            <v-text-field v-model="character.vs_magic" label="Vs Magic" type="number" required></v-text-field>
-            <v-text-field v-model="character.distance" label="Distance" type="number" required></v-text-field>
-            <v-checkbox v-model="character.winged" label="Winged"></v-checkbox>
+            <v-text-field
+              label="Character Name"
+              v-model="character.name"
+              required
+            ></v-text-field>
+
+            <v-select
+              label="Weapon"
+              v-model="character.weapon"
+              :items="weapons"
+              required
+            ></v-select>
+
+            <v-text-field
+              label="VS Sword"
+              v-model="character.vs_sword"
+              type="number"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              label="VS Spear"
+              v-model="character.vs_spear"
+              type="number"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              label="VS Axe"
+              v-model="character.vs_axe"
+              type="number"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              label="VS Bow"
+              v-model="character.vs_bow"
+              type="number"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              label="VS Magic"
+              v-model="character.vs_magic"
+              type="number"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              label="Distance"
+              v-model="character.distance"
+              type="number"
+              required
+            ></v-text-field>
+
+            <v-checkbox
+              label="Winged"
+              v-model="character.winged"
+            ></v-checkbox>
+
+            <v-text-field
+              label="Attack"
+              v-model="character.atk"
+              type="number"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              label="Movement"
+              v-model="character.movement"
+              type="number"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              label="Health"
+              v-model="character.health"
+              type="number"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              label="Price"
+              v-model="character.price"
+              type="number"
+              required
+            ></v-text-field>
+
+            <v-file-input
+              label="Sprite"
+              @change="onFileChange"
+              accept=".zip"
+              required
+            ></v-file-input>
             <v-btn type="submit" color="primary">Save</v-btn>
         </v-form>
     </v-container>
