@@ -1,0 +1,315 @@
+{
+  "bodyTypeName": "muscular",
+  "url": "https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/#?body=Body_color_fur_black&head=Wartotaur_fur_black&weapon=Trident_gold&legs=Wide_pants_walnut&armour=Leather_leather&ammo=none_Ammo&sex=muscular&wings=Lizard_Wings_%28Alt_Colors%29_fur_black&tail=Lizard_Tail_%28Alt_Colors%29_black&mustache=none_French_Mustache&hair=none_Afro&wound_ribs=Ribs_ribs&wound_arm=none_Arm&wound_mouth=Mouth_mouth&shoes=Folded_Rim_Boots_black&shoulders=Plate_gold&arms=Armour_gold&bracers=Bracers_brass&quiver=none_Quiver&sash=Obi_brown&horns=Backwards_Horns_horns&facial_eyes=none_Sunglasses",
+  "spritesheets": "https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/spritesheets/",
+  "version": 1,
+  "datetime": "24/3/2025, 13:01:48",
+  "credits": [
+    {
+      "fileName": "body/bodies/muscular/fur_black.png",
+      "licenses": "CC-BY-SA 3.0,GPL 3.0",
+      "authors": "bluecarrot16,JaidynReiman,Evert,TheraHedwig,MuffinElZangano,Durrani,Sander Frenken (castelonia),Benjamin K. Smith (BenCreating),Eliza Wyatt (ElizaWy),dalonedrau,Stephen Challener (Redshrike)",
+      "urls": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles,https://opengameart.org/content/lpc-barbarian-sprite-base,https://opengameart.org/content/lpc-muscular-swing-animation,https://opengameart.org/content/lpc-muscular-hurt-animation,https://opengameart.org/content/lpc-jump-expanded,https://opengameart.org/content/lpc-revised-character-basics,https://opengameart.org/content/lpc-be-seated,https://opengameart.org/content/lpc-jump-expanded,https://opengameart.org/content/lpc-character-bases,https://opengameart.org/content/lpc-male-jumping-animation-by-durrani",
+      "notes": "see details at https://opengameart.org/content/lpc-character-bases"
+    },
+    {
+      "fileName": "body/wound/ribs.png",
+      "licenses": "CC-BY-SA 3.0,GPL 3.0",
+      "authors": "Benjamin K. Smith (BenCreating),Sander Frenken (castelonia)",
+      "urls": "https://opengameart.org/content/lpc-zombie",
+      "notes": ""
+    },
+    {
+      "fileName": "body/wound/mouth.png",
+      "licenses": "CC-BY-SA 3.0,GPL 3.0",
+      "authors": "Benjamin K. Smith (BenCreating),Sander Frenken (castelonia)",
+      "urls": "https://opengameart.org/content/lpc-zombie",
+      "notes": ""
+    },
+    {
+      "fileName": "body/tail/lizard/alt/adult/fg/black.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "Nila122,bluecarrot16,JaidynReiman",
+      "urls": "https://opengameart.org/content/drakes-and-lizardfolk",
+      "notes": "edited for v3 bases and recolored by bluecarrot16, additional animations added by JaidynReiman"
+    },
+    {
+      "fileName": "body/tail/lizard/alt/adult/bg/black.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "Nila122,bluecarrot16,JaidynReiman",
+      "urls": "https://opengameart.org/content/drakes-and-lizardfolk",
+      "notes": "edited for v3 bases and recolored by bluecarrot16, additional animations added by JaidynReiman"
+    },
+    {
+      "fileName": "body/wings/lizard/alt/adult/fg/fur_black.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "JaidynReiman,Nila122,bluecarrot16",
+      "urls": "https://opengameart.org/content/drakes-and-lizardfolk,https://opengameart.org/content/lpc-wings-new-animations",
+      "notes": "edited for v3 bases and recolored by bluecarrot16, sit/jump/run/emote/revised combat by JaidynReiman"
+    },
+    {
+      "fileName": "body/wings/lizard/alt/adult/bg/fur_black.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "JaidynReiman,Nila122,bluecarrot16",
+      "urls": "https://opengameart.org/content/drakes-and-lizardfolk,https://opengameart.org/content/lpc-wings-new-animations",
+      "notes": "edited for v3 bases and recolored by bluecarrot16, sit/jump/run/emote/revised combat by JaidynReiman"
+    },
+    {
+      "fileName": "head/heads/wartotaur/adult/fur_black.png",
+      "licenses": "OGA-BY 3.0,CC-BY 3.0",
+      "authors": "bluecarrot16,Evert,Stephen Challener (Redshrike)",
+      "urls": "https://opengameart.org/content/tower-defense-prototyping-assets-4-monsters-some-tiles-a-background-image,https://opengameart.org/content/wartotaur-4-directions,https://opengameart.org/content/lpc-folk",
+      "notes": "original **wart-o-taur** concept and sprite by Redshrike, extended to 4 directions and head extracted by Evert, cleanup and hurt/cast animations by bluecarrot16"
+    },
+    {
+      "fileName": "head/horns/backwards/adult/fg/horns.png",
+      "licenses": "OGA-BY 3.0,GPL 3.0,CC-BY-SA 3.0",
+      "authors": "Nila122",
+      "urls": "https://opengameart.org/content/lpc-lizard-headgear",
+      "notes": ""
+    },
+    {
+      "fileName": "head/horns/backwards/adult/bg/horns.png",
+      "licenses": "OGA-BY 3.0,GPL 3.0,CC-BY-SA 3.0",
+      "authors": "Nila122",
+      "urls": "https://opengameart.org/content/lpc-lizard-headgear",
+      "notes": ""
+    },
+    {
+      "fileName": "shoulders/plate/male/gold.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "bluecarrot16,Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites,http://opengameart.org/content/lpc-clothing-updates",
+      "notes": "recolors, adapted to v3 bases by bluecarrot16"
+    },
+    {
+      "fileName": "arms/armour/plate/male/gold.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "Michael Whitlock (bigbeargames),Matthew Krohn (makrohn),Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites,http://opengameart.org/content/lpc-clothing-updates",
+      "notes": "original by wulax, recolors by bigbeargames; adapted to v3 bases and further recolors by bluecarrot16"
+    },
+    {
+      "fileName": "arms/bracers/male/brass.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "Matthew Krohn (makrohn),Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+      "notes": ""
+    },
+    {
+      "fileName": "torso/waist/obi/male/brown.png",
+      "licenses": "OGA-BY 3.0+,CC-BY 3.0+,GPL 3.0",
+      "authors": "JaidynReiman",
+      "urls": "https://opengameart.org/content/lpc-kimono-relm",
+      "notes": ""
+    },
+    {
+      "fileName": "legs/pants/muscular/walnut.png",
+      "licenses": "CC-BY-SA 3.0,GPL 3.0",
+      "authors": "ElizaWy,JaidynReiman,dalonedrau,Johannes Sjölund (wulax),Stephen Challener (Redshrike)",
+      "urls": "https://opengameart.org/content/lpc-muscular-pants,https://opengameart.org/content/lpc-muscular-swing-animation,https://opengameart.org/content/lpc-muscular-hurt-animation",
+      "notes": "original muscular pants by ElizaWy, muscular by dalonedrau, cast and thrust frames by JaidynReiman"
+    },
+    {
+      "fileName": "feet/boots/fold/male/black.png",
+      "licenses": "OGA-BY 3.0+,CC-BY 3.0+,GPL 3.0",
+      "authors": "JaidynReiman",
+      "urls": "https://opengameart.org/content/lpc-kimono-relm,https://opengameart.org/content/lpc-expanded-socks-shoes",
+      "notes": ""
+    },
+    {
+      "fileName": "weapon/polearm/trident/foreground/walk/gold.png",
+      "licenses": "CC-BY-SA 3.0",
+      "authors": "Daniel Eddeland (daneeklu),gr3yh47,Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-weapons-two-bows-a-spear-and-a-trident,https://opengameart.org/content/lpc-extended-weapon-animations",
+      "notes": "original **trident** by daneeklu and gr3yh47; adapted to opposite hand and split into layers by bluecarrot16"
+    },
+    {
+      "fileName": "weapon/polearm/trident/background/walk/gold.png",
+      "licenses": "CC-BY-SA 3.0",
+      "authors": "Daniel Eddeland (daneeklu),gr3yh47,Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-weapons-two-bows-a-spear-and-a-trident,https://opengameart.org/content/lpc-extended-weapon-animations",
+      "notes": "original **trident** by daneeklu and gr3yh47; adapted to opposite hand and split into layers by bluecarrot16"
+    },
+    {
+      "fileName": "weapon/polearm/trident/foreground/thrust/gold.png",
+      "licenses": "CC-BY-SA 3.0",
+      "authors": "Daniel Eddeland (daneeklu),gr3yh47,Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-weapons-two-bows-a-spear-and-a-trident,https://opengameart.org/content/lpc-extended-weapon-animations",
+      "notes": "original **trident** by daneeklu and gr3yh47; adapted to opposite hand and split into layers by bluecarrot16"
+    },
+    {
+      "fileName": "weapon/polearm/trident/background/thrust/gold.png",
+      "licenses": "CC-BY-SA 3.0",
+      "authors": "Daniel Eddeland (daneeklu),gr3yh47,Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-weapons-two-bows-a-spear-and-a-trident,https://opengameart.org/content/lpc-extended-weapon-animations",
+      "notes": "original **trident** by daneeklu and gr3yh47; adapted to opposite hand and split into layers by bluecarrot16"
+    }
+  ],
+  "layers": [
+    {
+      "fileName": "weapon/polearm/trident/background/thrust/gold.png",
+      "zPos": -1,
+      "custom_animation": "thrust_oversize",
+      "parentName": "weapon",
+      "name": "Trident",
+      "variant": "gold",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "body/tail/lizard/alt/adult/bg/black.png",
+      "zPos": 5,
+      "parentName": "tail",
+      "name": "Lizard_Tail_(Alt_Colors)",
+      "variant": "black",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "body/wings/lizard/alt/adult/bg/fur_black.png",
+      "zPos": 5,
+      "parentName": "wings",
+      "name": "Lizard_Wings_(Alt_Colors)",
+      "variant": "fur_black",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "head/horns/backwards/adult/bg/horns.png",
+      "zPos": 7,
+      "parentName": "horns",
+      "name": "Backwards_Horns",
+      "variant": "horns",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "weapon/polearm/trident/background/walk/gold.png",
+      "zPos": 9,
+      "custom_animation": "walk_128",
+      "parentName": "weapon",
+      "name": "Trident",
+      "variant": "gold",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "body/bodies/muscular/fur_black.png",
+      "zPos": 10,
+      "parentName": "body",
+      "name": "Body_color",
+      "variant": "fur_black",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "body/wound/ribs.png",
+      "zPos": 15,
+      "parentName": "wound_ribs",
+      "name": "Ribs",
+      "variant": "ribs",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "legs/pants/muscular/walnut.png",
+      "zPos": 20,
+      "parentName": "legs",
+      "name": "Wide_pants",
+      "variant": "walnut",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "feet/boots/fold/male/black.png",
+      "zPos": 25,
+      "parentName": "shoes",
+      "name": "Folded_Rim_Boots",
+      "variant": "black",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "arms/armour/plate/male/gold.png",
+      "zPos": 60,
+      "parentName": "arms",
+      "name": "Armour",
+      "variant": "gold",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "shoulders/plate/male/gold.png",
+      "zPos": 65,
+      "parentName": "shoulders",
+      "name": "Plate",
+      "variant": "gold",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "torso/waist/obi/male/brown.png",
+      "zPos": 65,
+      "parentName": "sash",
+      "name": "Obi",
+      "variant": "brown",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "arms/bracers/male/brass.png",
+      "zPos": 70,
+      "parentName": "bracers",
+      "name": "Bracers",
+      "variant": "brass",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "body/tail/lizard/alt/adult/fg/black.png",
+      "zPos": 85,
+      "parentName": "tail",
+      "name": "Lizard_Tail_(Alt_Colors)",
+      "variant": "black",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "head/heads/wartotaur/adult/fur_black.png",
+      "zPos": 100,
+      "parentName": "head",
+      "name": "Wartotaur",
+      "variant": "fur_black",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "body/wings/lizard/alt/adult/fg/fur_black.png",
+      "zPos": 105,
+      "parentName": "wings",
+      "name": "Lizard_Wings_(Alt_Colors)",
+      "variant": "fur_black",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "body/wound/mouth.png",
+      "zPos": 115,
+      "parentName": "wound_mouth",
+      "name": "Mouth",
+      "variant": "mouth",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "head/horns/backwards/adult/fg/horns.png",
+      "zPos": 126,
+      "parentName": "horns",
+      "name": "Backwards_Horns",
+      "variant": "horns",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "weapon/polearm/trident/foreground/walk/gold.png",
+      "zPos": 140,
+      "custom_animation": "walk_128",
+      "parentName": "weapon",
+      "name": "Trident",
+      "variant": "gold",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "weapon/polearm/trident/foreground/thrust/gold.png",
+      "zPos": 150,
+      "custom_animation": "thrust_oversize",
+      "parentName": "weapon",
+      "name": "Trident",
+      "variant": "gold",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    }
+  ]
+}
