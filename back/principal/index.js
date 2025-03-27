@@ -496,10 +496,12 @@ app.get("/getCharactersOwned/:id", async (req, res) => {
 app.get("/sprites", async (req, res) => {
   try {
     const spritesDir = path.join(__dirname, "Sprites");
-    const spriteUrls = [];
     const spriteFolders = await fs.promises.readdir(spritesDir, { withFileTypes: true });
+    const spriteLists = [];
+
     for (const folder of spriteFolders) {
       if (folder.isDirectory()) {
+        const folderData = { name: folder.name, rutas: [] };
         const standardDir = path.join(spritesDir, folder.name, "standard");
         const customDir = path.join(spritesDir, folder.name, "custom");
 
@@ -507,19 +509,21 @@ app.get("/sprites", async (req, res) => {
           const standardFiles = await fs.promises.readdir(standardDir);
           standardFiles
             .filter((file) => file.endsWith(".png"))
-            .forEach((file) => spriteUrls.push(`${process.env.LINK_SPRITES}/Sprites/${folder.name}/standard/${file}`));
+            .forEach((file) => folderData.rutas.push(`${process.env.LINK_SPRITES}/Sprites/${folder.name}/standard/${file}`));
         }
 
         if (fs.existsSync(customDir)) {
           const customFiles = await fs.promises.readdir(customDir);
           customFiles
             .filter((file) => file.endsWith(".png"))
-            .forEach((file) => spriteUrls.push(`${process.env.LINK_SPRITES}/Sprites/${folder.name}/custom/${file}`));
+            .forEach((file) => folderData.rutas.push(`${process.env.LINK_SPRITES}/Sprites/${folder.name}/custom/${file}`));
         }
+
+        spriteLists.push(folderData);
       }
     }
 
-    res.status(200).json(spriteUrls);
+    res.status(200).json({ spriteLists });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
