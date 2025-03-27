@@ -433,6 +433,27 @@ app.get("/armies/:id", async (req, res) => {
   }
 });
 
+app.get("/armies/:id/characters", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const army = await Army.findByPk(id);
+    if (!army) {
+      return res.status(404).json({ error: "Army not found" });
+    }
+
+    const characters = await Promise.all([
+      Character.findByPk(army.unit1),
+      Character.findByPk(army.unit2),
+      Character.findByPk(army.unit3),
+      Character.findByPk(army.unit4),
+    ]);
+
+    res.status(200).json(characters);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 app.get("/getOpponent/:id", async (req, res) => {
   try {
     const playerId = req.params.id;
