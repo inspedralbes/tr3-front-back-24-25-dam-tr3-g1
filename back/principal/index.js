@@ -493,6 +493,39 @@ app.get("/getCharactersOwned/:id", async (req, res) => {
   }
 });
 
+app.get("/sprites", async (req, res) => {
+  try {
+    const spritesDir = path.join(__dirname, "Sprites");
+    const spriteUrls = [];
+    const spriteFolders = await fs.promises.readdir(spritesDir, { withFileTypes: true });
+    for (const folder of spriteFolders) {
+      if (folder.isDirectory()) {
+        const standardDir = path.join(spritesDir, folder.name, "standard");
+        const customDir = path.join(spritesDir, folder.name, "custom");
+
+        if (fs.existsSync(standardDir)) {
+          const standardFiles = await fs.promises.readdir(standardDir);
+          standardFiles
+            .filter((file) => file.endsWith(".png"))
+            .forEach((file) => spriteUrls.push(`${process.env.LINK_SPRITES}/Sprites/${folder.name}/standard/${file}`));
+        }
+
+        if (fs.existsSync(customDir)) {
+          const customFiles = await fs.promises.readdir(customDir);
+          customFiles
+            .filter((file) => file.endsWith(".png"))
+            .forEach((file) => spriteUrls.push(`${process.env.LINK_SPRITES}/Sprites/${folder.name}/custom/${file}`));
+        }
+      }
+    }
+
+    res.status(200).json(spriteUrls);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.listen(port, async () => {
   try {
     await sequelize.sync();
