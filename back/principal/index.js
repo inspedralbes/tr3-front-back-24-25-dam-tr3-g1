@@ -42,6 +42,8 @@ const upload = multer({
   },
 });
 
+const uploadAA = multer({ dest: 'AssetBundles/' });
+
 const app = express();
 const port = process.env.PORT;
 
@@ -56,7 +58,7 @@ app.use(cors());
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Reemplaza con el origen de tu frontend
+    origin: "*", // Permitir acceso desde cualquier origen
   })
 );
 
@@ -526,6 +528,42 @@ app.get("/sprites", async (req, res) => {
     res.status(200).json({ spriteLists });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/AssetBundles", (req, res) => {
+  const filePath = path.join(__dirname, "AssetBundles", "allprefabs");
+  if (fs.existsSync(filePath)) {
+    res.download(filePath, "allprefabs", (err) => {
+      if (err) {
+        console.error("Error downloading file:", err);
+        res.status(500).json({ error: "Error downloading file" });
+      }
+    });
+  } else {
+    res.status(404).json({ error: "File not found" });
+  }
+});
+
+app.post("/AssetBundles", uploadAA.single("allprefabs"), async (req, res) => {
+  if (!req.file || !req.file.path) {
+    console.error("File upload failed. req.file is undefined.");
+    return res.status(400).json({ error: "No AssetBundle uploaded or invalid file" });
+  }
+
+  const assetBundlePath = req.file.path;
+  const destinationPath = path.join(__dirname, "AssetBundles", "allprefabs");
+
+  try {
+    if (!fs.existsSync(path.join(__dirname, "AssetBundles"))) {
+      fs.mkdirSync(path.join(__dirname, "AssetBundles"), { recursive: true });
+    }
+
+    await fs.promises.rename(assetBundlePath, destinationPath);
+    res.status(201).json({ message: "AssetBundle uploaded successfully" });
+  } catch (error) {
+    console.error("Error moving file:", error);
     res.status(500).json({ error: error.message });
   }
 });
