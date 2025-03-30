@@ -3,7 +3,7 @@ version: '3.8'
 services:
   tr-3-front:
     image: node:23-bookworm-slim
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "cp .env.DEV .env && npm install && npm run dev"
     volumes:
       - ./vue/vuetify-project:/usr/src/app
     working_dir: /usr/src/app
@@ -63,10 +63,12 @@ services:
     image: portainer/portainer-ce:latest
     ports:
       - 9443:9443
+      - 9000:9000
     volumes:
       - data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
+    command: --http-enabled
 
   tr-3-odoo:
     image: odoo:17
@@ -118,6 +120,16 @@ services:
       - tr-3-odoo-db
     volumes:
       - pgadmin-data:/var/lib/pgadmin4
+  tr-3-statistics:
+    image: python:3.10
+    volumes:
+      - ./back/Statistics:/app
+      - ./back/Principal/Statistics:/Images
+    working_dir: /app
+    command: sh -c "cp .env.DEV .env && pip install pandas matplotlib seaborn requests python-dotenv pytz && python /app/script.py"
+    depends_on:
+      - tr-3-back-principal
+    restart: always
 
 volumes:
   mysql-db:

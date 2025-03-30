@@ -1,11 +1,10 @@
 <template>
     <div>
-      <h1>Gestor d'Exèrcit</h1>
   
       <div class="scroll-picker">
         <v-card>
           <v-card-title>
-            <h2>Unitats</h2>
+            <h2>Gestor d'Exèrcit</h2>
           </v-card-title>
           <v-card-text>
             <v-btn class="new-unit-btn" to="/CreateCharacter">Nova unitat</v-btn>
@@ -151,6 +150,7 @@
   
   .styled-table tbody tr:hover {
     background-color: #f1f1f1;
+    color: black;
   }
   
   .styled-table img {

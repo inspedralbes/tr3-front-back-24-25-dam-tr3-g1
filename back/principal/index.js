@@ -16,7 +16,10 @@ import { Jimp } from "jimp";
 import fs from "fs";
 import dotenv from "dotenv";
 import axios from "axios";
+import argon2 from "argon2";
 dotenv.config();
+const app = express();
+const port = process.env.PORT;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -42,10 +45,7 @@ const upload = multer({
   },
 });
 
-const uploadAA = multer({ dest: 'AssetBundles/' });
-
-const app = express();
-const port = process.env.PORT;
+const uploadAsset = multer({ dest: 'AssetBundles/' });
 
 const Character = defineCharacter(sequelize);
 const Army = defineArmy(sequelize);
@@ -58,7 +58,7 @@ app.use(cors());
 
 app.use(
   cors({
-    origin: "*", // Permitir acceso desde cualquier origen
+    origin: "*",
   })
 );
 
@@ -67,7 +67,10 @@ app.use("/Sprites", express.static(path.join(__dirname, "Sprites")));
 app.post("/newUser", async (req, res) => {
   const { id, username, password, email } = req.body;
   try {
-    const nouUser = await User.create({ id, username, password, email }); // Usa el ID de Odoo
+    const hashedPassword = await argon2.hash(password);
+    
+    const nouUser = await User.create({ id, username, password: hashedPassword, email });
+    
     const Armys = await Army.findAll();
     if (Armys.length > 0) {
       await Army.create({
@@ -85,16 +88,39 @@ app.post("/newUser", async (req, res) => {
   }
 });
 
+app.get("/usersStatistics", async (req, res) => {
+  try {
+    const users = await User.findAll();
+    const userStatistics = users.map((user) => {
+      return {
+        username: user.username,
+        email: user.email,
+        elo: user.elo,
+        victories: user.victories,
+        defeats: user.defeats,
+        points: user.points,
+      };
+    });
+    res.status(200).json(userStatistics);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const foundUser = await User.findOne({ where: { email, password } });
-    if (foundUser) {
-      console.log(foundUser);
-      res.status(200).json(foundUser);
-    } else {
-      res.status(404).json({ error: "User not found" });
+    const foundUser = await User.findOne({ where: { email } });
+    if (!foundUser) {
+      return res.status(404).json({ error: "User not found" });
     }
+    
+    const isMatch = await argon2.verify(foundUser.password, password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    
+    res.status(200).json(foundUser);
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -344,6 +370,15 @@ app.get("/armies/:id", async (req, res) => {
   }
 });
 
+app.get("/armies", async (req, res) => {
+  try {
+    const armies = await Army.findAll();
+    res.status(200).json(armies);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 app.get("/getOpponent/:id", async (req, res) => {
   try {
     const playerId = req.params.id;
@@ -532,10 +567,14 @@ app.get("/sprites", async (req, res) => {
   }
 });
 
-app.get("/AssetBundles", (req, res) => {
-  const filePath = path.join(__dirname, "AssetBundles", "allprefabs");
+app.use("/AssetBundles", express.static(path.join(__dirname, "AssetBundles")));
+
+app.use("/Statistics", express.static(path.join(__dirname, "Statistics")));
+
+app.get("/DownloadWindows", (req, res) => {
+  const filePath = path.join(__dirname, "Build", "Lorem_Ipsum_Dolor_Windows.exe");
   if (fs.existsSync(filePath)) {
-    res.download(filePath, "allprefabs", (err) => {
+    res.download(filePath, "Lorem_Ipsum_Dolor_Windows.exe", (err) => {
       if (err) {
         console.error("Error downloading file:", err);
         res.status(500).json({ error: "Error downloading file" });
@@ -546,26 +585,17 @@ app.get("/AssetBundles", (req, res) => {
   }
 });
 
-app.post("/AssetBundles", uploadAA.single("allprefabs"), async (req, res) => {
-  if (!req.file || !req.file.path) {
-    console.error("File upload failed. req.file is undefined.");
-    return res.status(400).json({ error: "No AssetBundle uploaded or invalid file" });
-  }
+app.post("/AssetBundles", uploadAsset.single("file"), (req, res) => {
+  const originalName = req.file.originalname;
+  const destinationPath = path.join(__dirname, "AssetBundles", originalName);
 
-  const assetBundlePath = req.file.path;
-  const destinationPath = path.join(__dirname, "AssetBundles", "allprefabs");
-
-  try {
-    if (!fs.existsSync(path.join(__dirname, "AssetBundles"))) {
-      fs.mkdirSync(path.join(__dirname, "AssetBundles"), { recursive: true });
+  fs.rename(req.file.path, destinationPath, (err) => {
+    if (err) {
+      console.error("Error renaming file:", err);
+      return res.status(500).json({ error: "Error saving file" });
     }
-
-    await fs.promises.rename(assetBundlePath, destinationPath);
-    res.status(201).json({ message: "AssetBundle uploaded successfully" });
-  } catch (error) {
-    console.error("Error moving file:", error);
-    res.status(500).json({ error: error.message });
-  }
+    res.send("Archivo subido correctamente");
+  });
 });
 
 app.listen(port, async () => {

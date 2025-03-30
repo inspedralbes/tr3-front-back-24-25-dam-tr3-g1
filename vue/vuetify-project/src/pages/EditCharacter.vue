@@ -4,7 +4,7 @@
             <v-text-field
               label="Character Name"
               v-model="character.name"
-              required
+              readonly
             ></v-text-field>
 
             <v-select
@@ -88,13 +88,6 @@
               type="number"
               required
             ></v-text-field>
-
-            <v-file-input
-              label="Sprite"
-              @change="onFileChange"
-              accept=".zip"
-              required
-            ></v-file-input>
             <v-btn type="submit" color="primary">Save</v-btn>
         </v-form>
     </v-container>
