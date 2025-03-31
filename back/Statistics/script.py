@@ -85,14 +85,38 @@ def generate_statistics():
     top_5_characters = DATA_CHARACTERS_URL[DATA_CHARACTERS_URL["id"].isin(character_usage_count.index)]
     top_5_character_names = top_5_characters.set_index("id").loc[character_usage_count.index]["name"]
     
-    plt.figure(figsize=(8, 8))
-    # autopct='%1.1f%%' per mostrar el percentatge amb un decimal
-    plt.pie(character_usage_count, labels=top_5_character_names, autopct='%1.1f%%', startangle=140, colors=plt.cm.tab10.colors)
+    plt.figure(figsize=(10, 6))
+    plt.plot(top_5_character_names, character_usage_count, marker='o', linestyle='-', color='purple')
+    plt.xlabel("Personatges")
+    plt.ylabel("Nombre d'Usos")
     plt.title("Personatges Més Utilitzats (Top 5) - Data: " + current_datetime)
+    plt.grid(True)
     most_used_characters_image_path = os.path.join(output_dir, "top_5_most_popular_character.png")
     plt.savefig(most_used_characters_image_path)
     plt.close()
-    print(f"Gràfic de pastís dels personatges més utilitzats (Top 5) guardat a: {most_used_characters_image_path}")
+    print(f"Gràfic de línies i punts dels personatges més utilitzats (Top 5) guardat a: {most_used_characters_image_path}")
+    
+    # 4. Personatges menys utilitzats (Top 5)
+    print("Generant Personatges menys utilitzats (Top 5)...")
+    # Transformar les columnes `unit1`, `unit2`, `unit3`, `unit4` en files
+    character_usage = DATA_ARMIES_URL.melt(id_vars=["userid"], value_vars=["unit1", "unit2", "unit3", "unit4"], 
+                                           var_name="unit_slot", value_name="character_id")
+    character_usage_count = character_usage["character_id"].value_counts(ascending=True).head(5)
+    
+    # Obtenir els noms dels personatges
+    bottom_5_characters = DATA_CHARACTERS_URL[DATA_CHARACTERS_URL["id"].isin(character_usage_count.index)]
+    bottom_5_character_names = bottom_5_characters.set_index("id").loc[character_usage_count.index]["name"]
+    
+    plt.figure(figsize=(10, 6))
+    plt.plot(bottom_5_character_names, character_usage_count, marker='o', linestyle='-', color='orange')
+    plt.xlabel("Personatges")
+    plt.ylabel("Nombre d'Usos")
+    plt.title("Personatges Menys Utilitzats (Top 5) - Data: " + current_datetime)
+    plt.grid(True)
+    least_used_characters_image_path = os.path.join(output_dir, "top_5_least_popular_character.png")
+    plt.savefig(least_used_characters_image_path)
+    plt.close()
+    print(f"Gràfic de línies i punts dels personatges menys utilitzats (Top 5) guardat a: {least_used_characters_image_path}")
 
 while True:
     time.sleep(100)

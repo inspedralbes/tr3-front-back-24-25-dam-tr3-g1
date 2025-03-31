@@ -44,6 +44,9 @@
       <v-card class="graphic-card">
         <v-img :src="`${url}/Statistics/top_5_most_popular_character.png`" aspect-ratio="1.5" style="margin: 20px;"></v-img>
       </v-card>
+      <v-card class="graphic-card">
+        <v-img :src="`${url}/Statistics/top_5_least_popular_character.png`" aspect-ratio="1.5" style="margin: 20px;"></v-img>
+      </v-card>
       </div>
     </div>
   </template>
