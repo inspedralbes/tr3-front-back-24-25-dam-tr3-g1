@@ -12,7 +12,7 @@ services:
     build:
       dockerfile: ./back/principal/dev.Dockerfile
       context: .
-    command: sh -c "cp .env.DEV .env && npm install && npm run dev"
+    command: sh -c "cp .env.PROD .env && npm install && npm run dev"
     volumes:
       - ./back/principal:/usr/src/app
     working_dir: /usr/src/app
@@ -27,7 +27,7 @@ services:
     build:
       dockerfile: ./back/odoo/dev.Dockerfile
       context: .
-    command: sh -c "cp .env.DEV .env && npm install && npm run dev"
+    command: sh -c "cp .env.PROD .env && npm install && npm run dev"
     volumes:
       - ./back/odoo:/usr/src/app
     working_dir: /usr/src/app
@@ -122,7 +122,7 @@ services:
       - ./back/Statistics:/app
       - ./back/Principal/Statistics:/Images
     working_dir: /app
-    command: sh -c "cp .env.DEV .env && pip install pandas matplotlib seaborn requests python-dotenv pytz && python /app/script.py"
+    command: sh -c "cp .env.PROD .env && pip install pandas matplotlib seaborn requests python-dotenv pytz && python /app/script.py"
     depends_on:
       - tr-3-back-principal
     restart: always
