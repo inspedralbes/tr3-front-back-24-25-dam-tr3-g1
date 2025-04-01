@@ -21,6 +21,7 @@
                 <v-btn class="me-4" @click="register">
                     Registrar-se
                 </v-btn>
+                <p v-if="errorMessage" class="text-red mt-2">{{ errorMessage }}</p>
             </form>
             <v-card-actions>
                 <router-link to="/login">Ja tens un compte? Inicia sessió</router-link>
@@ -35,7 +36,7 @@ import useVuelidate from '@vuelidate/core'
 import { useRouter } from 'vue-router'
 import { required, email, sameAs } from '@vuelidate/validators'
 import { useAppStore } from '@/stores/app.js'
-import { createUser, createUserInOdoo } from '@/services/communicationManager'
+import { createUser, createUserInOdoo, getUsersStatistics } from '@/services/communicationManager'
 
 const initialState = {
     username: '',
@@ -45,6 +46,7 @@ const initialState = {
 }
 
 const appStore = useAppStore()
+const errorMessage = ref('')
 
 const state = reactive({
     ...initialState,
@@ -61,6 +63,31 @@ const v$ = useVuelidate(rules, state)
 const router = useRouter()
 
 async function register() {
+
+    const users = await getUsersStatistics();
+    const userExists = users.find(user => user.username === state.username);
+    if (userExists) {
+        console.log("Nom d'usuari ja existeix");
+        errorMessage.value = "Nom d'usuari ja existeix";
+        appStore.setSnackbar({
+            show: true,
+            message: errorMessage.value,
+            color: 'error',
+        })
+        return;
+    }
+    const emailExists = users.find(user => user.email === state.email);
+    if (emailExists) {
+        console.log('Ya existe una compte amb aquest email');
+        errorMessage.value = "Ya existe una compte amb aquest email";
+        appStore.setSnackbar({
+            show: true,
+            message: errorMessage.value,
+            color: 'error',
+        })
+        return;
+    }
+
     v$.value.$touch()
     if (state.confirmPassword == state.password) {
         if (!v$.value.$invalid) {

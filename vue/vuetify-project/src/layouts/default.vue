@@ -7,8 +7,8 @@
 
     <v-tabs>
       <v-tab to="/">Inici</v-tab>
-      <v-tab>Descarrega</v-tab>
-      <v-tab>Estadístiques</v-tab>
+      <v-tab to="/DownloadPage">Descarrega</v-tab>
+      <v-tab to="/Stats">Estadístiques</v-tab>
       <v-tab v-if="logueao" to="/CharacterManager">Afegir Sprites</v-tab>
       <v-tab v-if="!logueao" to="/login">Login</v-tab>
       <v-tab v-if="logueao" @click="logout()">Hola, {{ userName }} // Tancar Sesió</v-tab>

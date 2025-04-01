@@ -23,6 +23,8 @@
                 <v-btn class="me-4" @click="login">
                     Iniciar Sessió
                 </v-btn>
+
+                <p v-if="errorMessage" class="text-red mt-2">{{ errorMessage }}</p>
             </form>
             <router-link to="/register">No tens un compte? Registra't aquí</router-link>
         </v-card-text>
@@ -30,7 +32,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import useVuelidate from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'
@@ -44,7 +46,7 @@ const initialState = {
 
 const appStore = useAppStore()
 const router = useRouter()
-
+const errorMessage = ref('')
 
 const state = reactive({
     ...initialState,
@@ -63,6 +65,7 @@ async function login() {
     const res = await loginUser(state.email, state.password)
     const data = await res.json()
     if (data.error) {
+        errorMessage.value = "Error en l'inici de sessió: " + (data.message || "Email/Contrasenya incorrecta.")
         console.error(data.error)
         return
     }

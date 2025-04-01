@@ -1,7 +1,7 @@
 import { fr } from "vuetify/locale";
 
 async function createUser(id, username, password, email) {
-    const res = await fetch(`http://localhost:4000/newUser`, {
+    const res = await fetch(`${import.meta.env.VITE_BACK_URL}/newUser`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -12,7 +12,7 @@ async function createUser(id, username, password, email) {
 }
 
 async function loginUser(email, password) {
-    const res = await fetch(`http://localhost:4000/login`, {
+    const res = await fetch(`${import.meta.env.VITE_BACK_URL}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -21,6 +21,11 @@ async function loginUser(email, password) {
     });
     console.log(res);
     return res;
+}
+
+async function getUsersStatistics() {
+    const res = await fetch(`${import.meta.env.VITE_BACK_URL}/usersStatistics`);
+    return res.json();
 }
 
 async function createCharacter(characterData) {
@@ -49,7 +54,7 @@ async function createCharacter(characterData) {
 
     console.log(formData);
 
-    const response = await fetch(`http://localhost:4000/characters`, {
+    const response = await fetch(`${import.meta.env.VITE_BACK_URL}/characters`, {
         method: 'POST',
         body: formData
     });
@@ -58,7 +63,7 @@ async function createCharacter(characterData) {
 }
 
 async function updateCharacter(id, characterData) {
-    const response = await fetch(`http://localhost:4000/characters/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_BACK_URL}/characters/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -69,24 +74,24 @@ async function updateCharacter(id, characterData) {
 }
 
 async function deleteCharacter(id) {
-    const res = await fetch(`http://localhost:4000/characters/${id}`, {
+    const res = await fetch(`${import.meta.env.VITE_BACK_URL}/characters/${id}`, {
         method: 'DELETE'
     });
     return res;
 }
 
 async function getCharacters() {
-    const res = await fetch(`http://localhost:4000/characters`);
+    const res = await fetch(`${import.meta.env.VITE_BACK_URL}/characters`);
     return res.json();
 }
 
 async function getCharacterById(id) {
-    const response = await fetch(`http://localhost:4000/characters/${id}`);
+    const response = await fetch(`${import.meta.env.VITE_BACK_URL}/characters/${id}`);
     return response.json();
 }
 
 async function updateArmy(id, armyData) {
-    const response = await fetch(`http://localhost:4000/armies/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_BACK_URL}/armies/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -97,14 +102,14 @@ async function updateArmy(id, armyData) {
 }
 
 async function getArmyById(id) {
-    const response = await fetch(`http://localhost:4000/armies/${id}`);
+    const response = await fetch(`${import.meta.env.VITE_BACK_URL}/armies/${id}`);
     return response.json();
 }
 
 // ODOO
 
 async function createUserInOdoo(name, email) {
-    const res = await fetch(`http://localhost:4001/create-client`, {
+    const res = await fetch(`${import.meta.env.VITE_BACK_ODOO_URL}/create-client`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -125,7 +130,7 @@ async function createUserInOdoo(name, email) {
 }
 
 async function createCharacterInOdoo(characterData) {
-    const res = await fetch(`http://localhost:4001/create-product`, {
+    const res = await fetch(`${import.meta.env.VITE_BACK_ODOO_URL}/create-product`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -144,6 +149,7 @@ async function createCharacterInOdoo(characterData) {
 export {
     createUser,
     loginUser,
+    getUsersStatistics,
     createCharacter,
     updateCharacter,
     deleteCharacter,
