@@ -6,6 +6,7 @@ services:
     image: httpd:latest
     ports:
       - 80:80
+      - 443:443
     volumes:
       - ./vue/vuetify-project/dist:/usr/local/apache2/htdocs/
 
@@ -143,3 +144,11 @@ volumes:
   odoo-db-data:
   odoo-data:
   pgadmin-data:
+
+# Per a reclamar el certificat SSL (https)
+
+# docker run --rm -it \
+#     -v $(pwd)/certs:/etc/letsencrypt \
+#     -v /root/tr3-front-back-24-25-dam-tr3-g1/vue/vuetify-project/dist:/var/www/html \
+#     certbot/certbot certonly --webroot -w /var/www/html \
+#     -d lordgrids.dam.inspedralbes.cat
