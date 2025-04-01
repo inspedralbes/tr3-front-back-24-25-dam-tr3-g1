@@ -4,6 +4,8 @@ cd vue
 
 cd vuetify-project
 
+cp .env.PROD .env
+
 npm i
 
 npm run build

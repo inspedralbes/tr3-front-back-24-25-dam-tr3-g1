@@ -598,7 +598,7 @@ app.post("/AssetBundles", uploadAsset.single("file"), (req, res) => {
   });
 });
 
-app.listen(port, async () => {
+app.listen(port, '0.0.0.0', async () => {
   try {
     await sequelize.sync();
     console.log(`Server listening at http://localhost:${port}`);
