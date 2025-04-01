@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   tr-3-apache:
+    container_name: tr-3-apache
     image: httpd:latest
     ports:
       - 80:80
@@ -9,6 +10,7 @@ services:
       - ./vue/vuetify-project/dist:/usr/local/apache2/htdocs/
 
   tr-3-back-principal:
+    container_name: tr-3-back-principal
     build:
       dockerfile: ./back/principal/dev.Dockerfile
       context: .
@@ -24,6 +26,7 @@ services:
       - tr-3-mysql
 
   tr-3-back-odoo:
+    container_name: tr-3-back-odoo
     build:
       dockerfile: ./back/odoo/dev.Dockerfile
       context: .
@@ -35,6 +38,7 @@ services:
       - 4001:4001  
 
   tr-3-mysql:
+    container_name: tr-3-mysql
     image: mysql:latest
     restart: always
     environment:
@@ -46,6 +50,7 @@ services:
       - 3306:3306
 
   tr-3-adminer:
+    container_name: tr-3-adminer
     image: adminer
     restart: always
     ports:
@@ -56,6 +61,7 @@ services:
       - tr-3-mysql
 
   tr-3-portainer:
+    container_name: tr-3-portainer
     image: portainer/portainer-ce:latest
     ports:
       - 9443:9443
@@ -67,6 +73,7 @@ services:
     command: --http-enabled
 
   tr-3-odoo:
+    container_name: tr-3-odoo
     image: odoo:17
     depends_on:
       - tr-3-odoo-db
@@ -95,6 +102,7 @@ services:
       "
 
   tr-3-odoo-db:
+    container_name: tr-3-odoo-db
     image: postgres:15
     restart: always
     environment:
@@ -105,6 +113,7 @@ services:
       - odoo-db-data:/var/lib/postgresql/data
 
   tr-3-pgadmin:
+    container_name: tr-3-pgadmin
     image: dpage/pgadmin4
     restart: always
     ports:
@@ -117,10 +126,11 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin4
   tr-3-statistics:
+    container_name: tr-3-statisticss
     image: python:3.10
     volumes:
       - ./back/Statistics:/app
-      - ./back/Principal/Statistics:/Images
+      - ./back/principal/Statistics:/Images
     working_dir: /app
     command: sh -c "cp .env.PROD .env && pip install pandas matplotlib seaborn requests python-dotenv pytz && python /app/script.py"
     depends_on:

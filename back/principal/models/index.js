@@ -5,13 +5,17 @@ import defineCharacter from './character.js';
 import defineUsuari from './users.js';
 import defineArmy from './armies.js';
 import defineInventory from './Inventory.js';
+import dotenv from 'dotenv';
 
-const sequelize = new Sequelize('game', 'root', 'root', {
-    host: 'host.docker.internal',
-    dialect: 'mysql',
-    dialectOptions: {
-      multipleStatements: true
-    }
+
+dotenv.config();
+
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+  host: process.env.DB_HOST,
+  dialect: 'mysql',
+  dialectOptions: {
+    multipleStatements: true
+  }
 });
 
 defineCharacter(sequelize);
