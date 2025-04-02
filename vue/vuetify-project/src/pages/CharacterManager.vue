@@ -31,7 +31,7 @@
               <tbody>
                 <tr v-for="unit in units" :key="unit.id">
                   <td>{{ unit.name }}</td>
-                  <td><img :src="'http://localhost:4000' + unit.icon" alt="imatge unitat"></td>
+                  <td><img :src="url + unit.icon" alt="imatge unitat"></td>
                   <td>{{ unit.weapon }}</td>
                   <td>{{ unit.winged ? 'Sí' : 'No' }}</td>
                   <td>{{ unit.health }}</td>
@@ -64,6 +64,8 @@
   
   const router = useRouter()
   const units = ref([])
+
+  const url = import.meta.env.VITE_BACK_URL
   
   onMounted(() => {
     infoCharacters()

@@ -12,6 +12,15 @@ export const useAppStore = defineStore('app', {
     },
     getUser() {
       return this.user
-    }
-  }
+    },
+  },
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: 'auth',
+        storage: localStorage, // Usa localStorage para persistir los datos
+      },
+    ],
+  },
 })

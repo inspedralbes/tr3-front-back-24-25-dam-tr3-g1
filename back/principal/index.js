@@ -231,7 +231,7 @@ wss.on("connection", (ws) => {
     } else if (data.type === "changeTurn") {
       const { room } = data;
       console.log("Change turn received:", room);
-      console.log("Current turn:", games[room].turn);
+//      console.log("Current turn:", games[room].turn);
       if (games[room]) {
         if (games[room].turn == 1) {
           console.log("The turn is 1, changing to 2");
@@ -891,13 +891,9 @@ app.use("/AssetBundles", express.static(path.join(__dirname, "AssetBundles")));
 app.use("/Statistics", express.static(path.join(__dirname, "Statistics")));
 
 app.get("/DownloadWindows", (req, res) => {
-  const filePath = path.join(
-    __dirname,
-    "Build",
-    "Lorem_Ipsum_Dolor_Windows.exe"
-  );
+  const filePath = path.join(__dirname, "Build", "the_lord_of_the_grids.zip");
   if (fs.existsSync(filePath)) {
-    res.download(filePath, "Lorem_Ipsum_Dolor_Windows.exe", (err) => {
+    res.download(filePath, "the_lord_of_the_grids.zip", (err) => {
       if (err) {
         console.error("Error downloading file:", err);
         res.status(500).json({ error: "Error downloading file" });

@@ -3,7 +3,7 @@
     <template v-slot:prepend>
     </template>
 
-    <v-app-bar-title>Lorem Ipsum</v-app-bar-title>
+    <v-app-bar-title>The Lord Of The Grids</v-app-bar-title>
 
     <v-tabs>
       <v-tab to="/">Inici</v-tab>
