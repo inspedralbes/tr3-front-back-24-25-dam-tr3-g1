@@ -223,7 +223,7 @@ wss.on("connection", (ws) => {
     } else if(data.type==="changeTurn"){
       const { room } = data;
       console.log("Change turn received:", room);
-      console.log("Current turn:", games[room].turn);
+//      console.log("Current turn:", games[room].turn);
       if (games[room]) {
         if(games[room].turn == 1){
           console.log("The turn is 1, changing to 2");
@@ -847,13 +847,4 @@ app.post("/AssetBundles", uploadAsset.single("file"), (req, res) => {
     }
     res.send("Archivo subido correctamente");
   });
-});
-
-app.listen(port, '0.0.0.0', async () => {
-  try {
-    await sequelize.sync();
-    console.log(`Server listening at http://localhost:${port}`);
-  } catch (error) {
-    console.error("Could not connect to the database:", error);
-  }
 });
