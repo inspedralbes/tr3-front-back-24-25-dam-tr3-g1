@@ -345,6 +345,24 @@ app.post("/newUser", async (req, res) => {
   }
 });
 
+app.get("/users/:id/points", async (req, res) => {
+  const { id } = req.params;
+  console.log("ID", id);
+  try {
+    const user = await User.findByPk(id, {
+      attributes: ["points"], 
+    });
+    console.log(user);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).send({ points: user.points });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get("/usersStatistics", async (req, res) => {
   try {
     const users = await User.findAll();
