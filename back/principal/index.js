@@ -16,9 +16,12 @@ import { Jimp } from "jimp";
 import fs from "fs";
 import dotenv from "dotenv";
 import axios from "axios";
+import argon2 from "argon2";
 import { WebSocketServer } from "ws";
 
 dotenv.config();
+const app = express();
+const port = process.env.PORT;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -44,8 +47,7 @@ const upload = multer({
   },
 });
 
-const app = express();
-const port = process.env.PORT;
+const uploadAsset = multer({ dest: 'AssetBundles/' });
 
 const Character = defineCharacter(sequelize);
 const Army = defineArmy(sequelize);
@@ -59,7 +61,7 @@ app.use(cors());
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Reemplaza con el origen de tu frontend
+    origin: "*",
   })
 );
 
@@ -264,7 +266,10 @@ wss.on("connection", (ws) => {
 app.post("/newUser", async (req, res) => {
   const { id, username, password, email } = req.body;
   try {
-    const nouUser = await User.create({ id, username, password, email }); // Usa el ID de Odoo
+    const hashedPassword = await argon2.hash(password);
+    
+    const nouUser = await User.create({ id, username, password: hashedPassword, email });
+    
     const Armys = await Army.findAll();
     if (Armys.length > 0) {
       await Army.create({
@@ -282,16 +287,39 @@ app.post("/newUser", async (req, res) => {
   }
 });
 
+app.get("/usersStatistics", async (req, res) => {
+  try {
+    const users = await User.findAll();
+    const userStatistics = users.map((user) => {
+      return {
+        username: user.username,
+        email: user.email,
+        elo: user.elo,
+        victories: user.victories,
+        defeats: user.defeats,
+        points: user.points,
+      };
+    });
+    res.status(200).json(userStatistics);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const foundUser = await User.findOne({ where: { email, password } });
-    if (foundUser) {
-      console.log(foundUser);
-      res.status(200).json(foundUser);
-    } else {
-      res.status(404).json({ error: "User not found" });
+    const foundUser = await User.findOne({ where: { email } });
+    if (!foundUser) {
+      return res.status(404).json({ error: "User not found" });
     }
+    
+    const isMatch = await argon2.verify(foundUser.password, password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    
+    res.status(200).json(foundUser);
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -564,6 +592,15 @@ app.get("/armies/:id/characters", async (req, res) => {
   }
 });
 
+app.get("/armies", async (req, res) => {
+  try {
+    const armies = await Army.findAll();
+    res.status(200).json(armies);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 app.get("/getOpponent/:id", async (req, res) => {
   try {
     const playerId = req.params.id;
@@ -725,3 +762,73 @@ app.get("/getCharactersOwned/:id", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+app.get("/sprites", async (req, res) => {
+  try {
+    const spritesDir = path.join(__dirname, "Sprites");
+    const spriteFolders = await fs.promises.readdir(spritesDir, { withFileTypes: true });
+    const spriteLists = [];
+
+    for (const folder of spriteFolders) {
+      if (folder.isDirectory()) {
+        const folderData = { name: folder.name, rutas: [] };
+        const standardDir = path.join(spritesDir, folder.name, "standard");
+        const customDir = path.join(spritesDir, folder.name, "custom");
+
+        if (fs.existsSync(standardDir)) {
+          const standardFiles = await fs.promises.readdir(standardDir);
+          standardFiles
+            .filter((file) => file.endsWith(".png"))
+            .forEach((file) => folderData.rutas.push(`${process.env.LINK_SPRITES}/Sprites/${folder.name}/standard/${file}`));
+        }
+
+        if (fs.existsSync(customDir)) {
+          const customFiles = await fs.promises.readdir(customDir);
+          customFiles
+            .filter((file) => file.endsWith(".png"))
+            .forEach((file) => folderData.rutas.push(`${process.env.LINK_SPRITES}/Sprites/${folder.name}/custom/${file}`));
+        }
+
+        spriteLists.push(folderData);
+      }
+    }
+
+    res.status(200).json({ spriteLists });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.use("/AssetBundles", express.static(path.join(__dirname, "AssetBundles")));
+
+app.use("/Statistics", express.static(path.join(__dirname, "Statistics")));
+
+app.get("/DownloadWindows", (req, res) => {
+  const filePath = path.join(__dirname, "Build", "Lorem_Ipsum_Dolor_Windows.exe");
+  if (fs.existsSync(filePath)) {
+    res.download(filePath, "Lorem_Ipsum_Dolor_Windows.exe", (err) => {
+      if (err) {
+        console.error("Error downloading file:", err);
+        res.status(500).json({ error: "Error downloading file" });
+      }
+    });
+  } else {
+    res.status(404).json({ error: "File not found" });
+  }
+});
+
+app.post("/AssetBundles", uploadAsset.single("file"), (req, res) => {
+  const originalName = req.file.originalname;
+  const destinationPath = path.join(__dirname, "AssetBundles", originalName);
+
+  fs.rename(req.file.path, destinationPath, (err) => {
+    if (err) {
+      console.error("Error renaming file:", err);
+      return res.status(500).json({ error: "Error saving file" });
+    }
+    res.send("Archivo subido correctamente");
+  });
+});
+
+

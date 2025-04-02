@@ -5,8 +5,9 @@
             label="Character Name"
             v-model="character.name"
             required
+            @input="character.name = character.name.replace(/\s/g, '')"
             ></v-text-field>
-
+            
             <v-select
             label="Weapon"
             v-model="character.weapon"
@@ -93,7 +94,7 @@
                 accept=".zip"
                 required
             ></v-file-input>
-
+            <p v-if="errorMessage" class="text-red mt-2">{{ errorMessage }}</p>
             <v-btn v-btn type="submit">Submit</v-btn>
         </v-form>
     </v-container>
@@ -101,9 +102,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { createCharacter, createCharacterInOdoo } from '@/services/communicationManager'
+import { createCharacter, createCharacterInOdoo, getCharacters } from '@/services/communicationManager'
 
 const router = useRouter()
+
+const errorMessage = ref('')
 
 const character = ref({
     name: '',
@@ -121,7 +124,17 @@ const character = ref({
     price: 0,
 })
 
-function submitForm() {
+async function submitForm() {
+    const characters = await getCharacters();
+    
+    const nameExists = characters.some(char => char.name.toLowerCase() === character.value.name.toLowerCase());
+
+    if (nameExists) {
+        errorMessage.value = "Nom de personatge ja existent";
+        return;
+    }
+
+    // Datos para Odoo
     const odooData = {
         name: character.value.name,
         type: 'consu',
@@ -137,23 +150,19 @@ function submitForm() {
         volume: 0.5
     };
 
-    createCharacterInOdoo(odooData).then(res => {
-        if (res.ok) {
-            const odooCharacterId = res.id; // Obtén el ID del personaje creado en Odoo
-            console.log('Character created in Odoo', res);
-            character.value.id = odooCharacterId; // Asigna el ID de Odoo al personaje
-            if(character.value.winged){
-                character.value.winged = 1;
-            } else {
-                character.value.winged = 0;
-            }
-            createCharacter(character.value).then(() => {
-                router.push('/CharacterManager');
-            });
-        } else {
-            console.error('Failed to create character in Odoo');
-        }
-    });
+    const res = await createCharacterInOdoo(odooData);
+    
+    if (res.ok) {
+        const odooCharacterId = res.id;
+        character.value.id = odooCharacterId;
+
+        character.value.winged = character.value.winged ? 1 : 0;
+
+        await createCharacter(character.value);
+        router.push('/CharacterManager');
+    } else {
+        console.error('Failed to create character in Odoo');
+    }
 }
 
 function onFileChange(event) {
