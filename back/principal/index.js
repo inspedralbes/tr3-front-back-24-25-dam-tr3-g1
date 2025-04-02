@@ -47,7 +47,7 @@ const upload = multer({
   },
 });
 
-const uploadAsset = multer({ dest: 'AssetBundles/' });
+const uploadAsset = multer({ dest: "AssetBundles/" });
 
 const Character = defineCharacter(sequelize);
 const Army = defineArmy(sequelize);
@@ -191,11 +191,9 @@ wss.on("connection", (ws) => {
       if (games[room]) {
         const opponent = games[room].players.find((player) => player !== ws);
         if (opponent) {
-          console.log("Sending to"+opponent._socket.remoteAddress);
+          console.log("Sending to" + opponent._socket.remoteAddress);
           opponent.send(JSON.stringify({ type: "opponentMove", move }));
         }
-
-        
       }
     } else if (data.type === "makeAttack") {
       const { room, attack } = data;
@@ -203,38 +201,61 @@ wss.on("connection", (ws) => {
       if (games[room]) {
         const opponent = games[room].players.find((player) => player !== ws);
         if (opponent) {
-          opponent.send(JSON.stringify({ type: "opponentAttack","attack": attack }));
+          opponent.send(
+            JSON.stringify({ type: "opponentAttack", attack: attack })
+          );
         }
       }
-    }  else if (data.type === "endGame") {
-      const { room, winner } = data;
-      console.log("Game ended:", winner);
+    } else if (data.type === "endGame") {
+      const { room, userId } = data;
+      console.log("Game ended:", userId);
       if (games[room]) {
-        games[room].players.forEach((player) => {
+        games[room].players.forEach(async (player) => {
+          const isWinner = player.userId === userId;
+          const user = await User.findByPk(player.userId);
+
+          if (user) {
+            if (isWinner) {
+              user.elo += 30;
+              user.points += 50;
+              user.victories += 1;
+            } else {
+              if (user.elo > 0) {
+                user.elo -= 15;
+              }
+              user.points += 10;
+              user.defeats += 1;
+            }
+            await user.save();
+          }
+
           player.send(
             JSON.stringify({
               type: "gameOver",
-              winner,
+              reason: "GG",
+              winner: userId,
             })
           );
         });
         delete games[room];
       }
-    } else if(data.type==="changeTurn"){
+    } else if (data.type === "changeTurn") {
       const { room } = data;
       console.log("Change turn received:", room);
       console.log("Current turn:", games[room].turn);
       if (games[room]) {
-        if(games[room].turn == 1){
+        if (games[room].turn == 1) {
           console.log("The turn is 1, changing to 2");
           games[room].turn = 2;
-        }else{
+        } else {
           console.log("The turn is 2, changing to 1");
           games[room].turn = 1;
         }
-        console.log("The new turn is"+games[room].turn);
+        console.log("The new turn is" + games[room].turn);
         games[room].players.forEach((player) => {
-          player.send(JSON.stringify({ type: "turnUpdate", turn: games[room].turn }));
+          player.send(
+            JSON.stringify({ type: "turnUpdate", turn: games[room].turn })
+          );
         });
       }
     }
@@ -251,6 +272,7 @@ wss.on("connection", (ws) => {
               JSON.stringify({
                 type: "gameOver",
                 reason: "opponentDisconnected",
+                winner: player.userId,
               })
             );
           }
@@ -267,9 +289,14 @@ app.post("/newUser", async (req, res) => {
   const { id, username, password, email } = req.body;
   try {
     const hashedPassword = await argon2.hash(password);
-    
-    const nouUser = await User.create({ id, username, password: hashedPassword, email });
-    
+
+    const nouUser = await User.create({
+      id,
+      username,
+      password: hashedPassword,
+      email,
+    });
+
     const Armys = await Army.findAll();
     if (Armys.length > 0) {
       await Army.create({
@@ -313,12 +340,12 @@ app.post("/login", async (req, res) => {
     if (!foundUser) {
       return res.status(404).json({ error: "User not found" });
     }
-    
+
     const isMatch = await argon2.verify(foundUser.password, password);
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-    
+
     res.status(200).json(foundUser);
   } catch (error) {
     console.log(error);
@@ -766,7 +793,9 @@ app.get("/getCharactersOwned/:id", async (req, res) => {
 app.get("/sprites", async (req, res) => {
   try {
     const spritesDir = path.join(__dirname, "Sprites");
-    const spriteFolders = await fs.promises.readdir(spritesDir, { withFileTypes: true });
+    const spriteFolders = await fs.promises.readdir(spritesDir, {
+      withFileTypes: true,
+    });
     const spriteLists = [];
 
     for (const folder of spriteFolders) {
@@ -779,14 +808,22 @@ app.get("/sprites", async (req, res) => {
           const standardFiles = await fs.promises.readdir(standardDir);
           standardFiles
             .filter((file) => file.endsWith(".png"))
-            .forEach((file) => folderData.rutas.push(`${process.env.LINK_SPRITES}/Sprites/${folder.name}/standard/${file}`));
+            .forEach((file) =>
+              folderData.rutas.push(
+                `${process.env.LINK_SPRITES}/Sprites/${folder.name}/standard/${file}`
+              )
+            );
         }
 
         if (fs.existsSync(customDir)) {
           const customFiles = await fs.promises.readdir(customDir);
           customFiles
             .filter((file) => file.endsWith(".png"))
-            .forEach((file) => folderData.rutas.push(`${process.env.LINK_SPRITES}/Sprites/${folder.name}/custom/${file}`));
+            .forEach((file) =>
+              folderData.rutas.push(
+                `${process.env.LINK_SPRITES}/Sprites/${folder.name}/custom/${file}`
+              )
+            );
         }
 
         spriteLists.push(folderData);
@@ -805,7 +842,11 @@ app.use("/AssetBundles", express.static(path.join(__dirname, "AssetBundles")));
 app.use("/Statistics", express.static(path.join(__dirname, "Statistics")));
 
 app.get("/DownloadWindows", (req, res) => {
-  const filePath = path.join(__dirname, "Build", "Lorem_Ipsum_Dolor_Windows.exe");
+  const filePath = path.join(
+    __dirname,
+    "Build",
+    "Lorem_Ipsum_Dolor_Windows.exe"
+  );
   if (fs.existsSync(filePath)) {
     res.download(filePath, "Lorem_Ipsum_Dolor_Windows.exe", (err) => {
       if (err) {
@@ -830,5 +871,3 @@ app.post("/AssetBundles", uploadAsset.single("file"), (req, res) => {
     res.send("Archivo subido correctamente");
   });
 });
-
-
