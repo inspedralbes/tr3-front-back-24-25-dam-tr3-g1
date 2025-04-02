@@ -17,6 +17,8 @@ import fs from "fs";
 import dotenv from "dotenv";
 import axios from "axios";
 import argon2 from "argon2";
+import { WebSocketServer } from "ws";
+
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
@@ -51,7 +53,8 @@ const Character = defineCharacter(sequelize);
 const Army = defineArmy(sequelize);
 const User = defineUser(sequelize);
 const Inventory = defineInventory(sequelize);
-let activePlayers = [1, 2, 3];
+let queue = [];
+let games = {};
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -63,6 +66,202 @@ app.use(
 );
 
 app.use("/Sprites", express.static(path.join(__dirname, "Sprites")));
+
+// Create HTTP server and Socket.io server
+const server = app.listen(port, async () => {
+  try {
+    await sequelize.sync();
+    console.log(`Server listening at http://localhost:${port}`);
+  } catch (error) {
+    console.error("Could not connect to the database:", error);
+  }
+});
+
+const wss = new WebSocketServer({ server });
+
+wss.on("connection", (ws) => {
+  console.log("A user connected");
+  ws.on("message", async (message) => {
+    const data = JSON.parse(message);
+    console.log("Received message:", data);
+    if (data.type === "joinQueue") {
+      const { userId } = data;
+      console.log("User", userId, "joined the queue");
+      ws.send(JSON.stringify({ type: "queueJoined" }));
+      try {
+        const user = await User.findByPk(userId);
+        if (!user) {
+          ws.send(
+            JSON.stringify({ type: "error", message: "Usuari no trobat" })
+          );
+          return;
+        }
+
+        queue.push({ ws, elo: user.elo, userId: user.id });
+        console.log("Queue: ", queue);
+
+        let bestMatch = null;
+        let bestDiff = Infinity;
+
+        for (let i = 0; i < queue.length - 1; i++) {
+          const p1 = queue[i];
+          const p2 = queue[queue.length - 1];
+
+          const eloDiff = Math.abs(p1.elo - p2.elo);
+          if (eloDiff < bestDiff) {
+            bestDiff = eloDiff;
+            bestMatch = { player1: p1, player2: p2 };
+          }
+        }
+
+        if (bestMatch) {
+          queue = queue.filter(
+            (p) => p !== bestMatch.player1 && p !== bestMatch.player2
+          );
+          console.log(
+            "Match found:",
+            bestMatch.player1.userId,
+            "vs",
+            bestMatch.player2.userId
+          );
+          const room = `match_${bestMatch.player1.ws._socket.remoteAddress}_${bestMatch.player2.ws._socket.remoteAddress}`;
+          bestMatch.player1.ws.room = room;
+          bestMatch.player2.ws.room = room;
+
+          games[room] = {
+            players: [bestMatch.player1.ws, bestMatch.player2.ws],
+            turn: 1,
+          };
+          const player1User = await User.findByPk(bestMatch.player1.userId);
+          const player2User = await User.findByPk(bestMatch.player2.userId);
+
+          const player1Army = await Army.findOne({
+            where: { userid: player1User.id },
+          });
+          const player2Army = await Army.findOne({
+            where: { userid: player2User.id },
+          });
+
+          console.log("Player 1 army:", player1Army);
+          console.log("Player 2 army:", player2Army);
+
+          const player1Characters = await Promise.all([
+            Character.findByPk(player1Army.unit1),
+            Character.findByPk(player1Army.unit2),
+            Character.findByPk(player1Army.unit3),
+            Character.findByPk(player1Army.unit4),
+          ]);
+
+          const player2Characters = await Promise.all([
+            Character.findByPk(player2Army.unit1),
+            Character.findByPk(player2Army.unit2),
+            Character.findByPk(player2Army.unit3),
+            Character.findByPk(player2Army.unit4),
+          ]);
+
+          console.log("Player 1 characters:", player1Characters);
+          console.log("Player 2 characters:", player2Characters);
+
+          bestMatch.player1.ws.send(
+            JSON.stringify({
+              type: "matchFound",
+              room,
+              players: [player1User, player2User],
+              armies: [player1Characters, player2Characters],
+            })
+          );
+          bestMatch.player2.ws.send(
+            JSON.stringify({
+              type: "matchFound",
+              room,
+              players: [player1User, player2User],
+              armies: [player1Characters, player2Characters],
+            })
+          );
+          console.log(
+            `Partida creada: ${bestMatch.player1.userId} vs ${bestMatch.player2.userId} a la sala ${room}`
+          );
+        }
+      } catch (error) {
+        console.error("Error en matchmaking:", error);
+      }
+    } else if (data.type === "makeMove") {
+      const { room, move } = data;
+      console.log("Move received:", move);
+      if (games[room]) {
+        const opponent = games[room].players.find((player) => player !== ws);
+        if (opponent) {
+          console.log("Sending to"+opponent._socket.remoteAddress);
+          opponent.send(JSON.stringify({ type: "opponentMove", move }));
+        }
+
+        
+      }
+    } else if (data.type === "makeAttack") {
+      const { room, attack } = data;
+      console.log("Attack received:", attack);
+      if (games[room]) {
+        const opponent = games[room].players.find((player) => player !== ws);
+        if (opponent) {
+          opponent.send(JSON.stringify({ type: "opponentAttack","attack": attack }));
+        }
+      }
+    }  else if (data.type === "endGame") {
+      const { room, winner } = data;
+      console.log("Game ended:", winner);
+      if (games[room]) {
+        games[room].players.forEach((player) => {
+          player.send(
+            JSON.stringify({
+              type: "gameOver",
+              winner,
+            })
+          );
+        });
+        delete games[room];
+      }
+    } else if(data.type==="changeTurn"){
+      const { room } = data;
+      console.log("Change turn received:", room);
+      console.log("Current turn:", games[room].turn);
+      if (games[room]) {
+        if(games[room].turn == 1){
+          console.log("The turn is 1, changing to 2");
+          games[room].turn = 2;
+        }else{
+          console.log("The turn is 2, changing to 1");
+          games[room].turn = 1;
+        }
+        console.log("The new turn is"+games[room].turn);
+        games[room].players.forEach((player) => {
+          player.send(JSON.stringify({ type: "turnUpdate", turn: games[room].turn }));
+        });
+      }
+    }
+  });
+
+  ws.on("close", () => {
+    queue = queue.filter((player) => player.ws !== ws);
+
+    Object.keys(games).forEach((room) => {
+      if (games[room].players.includes(ws)) {
+        games[room].players.forEach((player) => {
+          if (player !== ws) {
+            player.send(
+              JSON.stringify({
+                type: "gameOver",
+                reason: "opponentDisconnected",
+              })
+            );
+          }
+        });
+        delete games[room];
+      }
+    });
+
+    console.log("User disconnected");
+  });
+});
 
 app.post("/newUser", async (req, res) => {
   const { id, username, password, email } = req.body;
@@ -85,6 +284,24 @@ app.post("/newUser", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
+  }
+});
+
+app.get("/users/:id/points", async (req, res) => {
+  const { id } = req.params;
+  console.log("ID", id);
+  try {
+    const user = await User.findByPk(id, {
+      attributes: ["points"], 
+    });
+    console.log(user);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).send({ points: user.points });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -246,6 +463,7 @@ app.put("/characters/:id", async (req, res) => {
     atk,
     movement,
     health,
+    price,
   } = req.body;
   try {
     const character = await Character.findByPk(id);
@@ -274,6 +492,7 @@ app.put("/characters/:id", async (req, res) => {
         atk,
         movement,
         health,
+        price,
       });
       res.status(200).json(character);
     } else {
@@ -370,6 +589,27 @@ app.get("/armies/:id", async (req, res) => {
   }
 });
 
+app.get("/armies/:id/characters", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const army = await Army.findByPk(id);
+    if (!army) {
+      return res.status(404).json({ error: "Army not found" });
+    }
+
+    const characters = await Promise.all([
+      Character.findByPk(army.unit1),
+      Character.findByPk(army.unit2),
+      Character.findByPk(army.unit3),
+      Character.findByPk(army.unit4),
+    ]);
+
+    res.status(200).json(characters);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 app.get("/armies", async (req, res) => {
   try {
     const armies = await Army.findAll();
@@ -420,6 +660,7 @@ app.post("/buyCharacter", async (req, res) => {
       res.status(404).json({ error: "User not found" });
       return;
     }
+    console.log(id_character);
     const character = await Character.findByPk(id_character);
     if (!character) {
       res.status(404).json({ error: "Character not found" });
@@ -437,7 +678,6 @@ app.post("/buyCharacter", async (req, res) => {
         await Inventory.create({ id_user, id_character });
         user.points -= character.price;
         await user.save();
-        
 
         const odooUrl = process.env.ODOO_URL;
         const orderData = JSON.stringify({
@@ -463,15 +703,22 @@ app.post("/buyCharacter", async (req, res) => {
           );
 
           try {
-            const response = await axios.post("http://host.docker.internal:4001/create-order", orderData, {
-              headers: {
-              "Content-Type": "application/json",
-              },
-            });
+            const response = await axios.post(
+              "http://host.docker.internal:4001/create-order",
+              orderData,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
             console.log("Order created:", response.data);
             res.status(201).json({ message: "Character bought successfully" });
           } catch (error) {
-            console.error("There was a problem with the axios operation:", error);
+            console.error(
+              "There was a problem with the axios operation:",
+              error
+            );
             res.status(500).json({ error: "Error creating order" });
           }
 
@@ -497,12 +744,14 @@ app.get("/getCharactersNotOwned/:id", async (req, res) => {
     const charactersOwned = Inventory.findAll({
       where: { id_user: user.id },
     });
-    const characterIds = (await charactersOwned).map((inventory) => inventory.id_character);
+    const characterIds = (await charactersOwned).map(
+      (inventory) => inventory.id_character
+    );
     const charactersNotOwned = await Character.findAll({
       where: { id: { [Op.notIn]: characterIds } },
     });
-    console.log("charactersNotOwned",charactersNotOwned);
-  
+    console.log("charactersNotOwned", charactersNotOwned);
+
     res.status(200).json(charactersNotOwned);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -520,7 +769,9 @@ app.get("/getCharactersOwned/:id", async (req, res) => {
     const charactersOwned = Inventory.findAll({
       where: { id_user: user.id },
     });
-    const characterIds = (await charactersOwned).map((inventory) => inventory.id_character);
+    const characterIds = (await charactersOwned).map(
+      (inventory) => inventory.id_character
+    );
     const ownedCharacters = await Character.findAll({
       where: { id: characterIds },
     });
