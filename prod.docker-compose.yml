@@ -9,6 +9,7 @@ services:
       - 443:443
     volumes:
       - ./vue/vuetify-project/dist:/usr/local/apache2/htdocs/
+      - ./vue/vuetify-project/src/static/httpd.conf:/usr/local/apache2/conf/httpd.conf
 
   tr-3-back-principal:
     container_name: tr-3-back-principal
