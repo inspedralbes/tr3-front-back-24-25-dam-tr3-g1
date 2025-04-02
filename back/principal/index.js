@@ -128,7 +128,7 @@ wss.on("connection", (ws) => {
 
           games[room] = {
             players: [bestMatch.player1.ws, bestMatch.player2.ws],
-            turn: bestMatch.player1.ws,
+            turn: 1,
           };
           const player1User = await User.findByPk(bestMatch.player1.userId);
           const player2User = await User.findByPk(bestMatch.player2.userId);
@@ -186,39 +186,25 @@ wss.on("connection", (ws) => {
     } else if (data.type === "makeMove") {
       const { room, move } = data;
       console.log("Move received:", move);
-      if (games[room] && games[room].turn === ws) {
+      if (games[room]) {
         const opponent = games[room].players.find((player) => player !== ws);
         if (opponent) {
+          console.log("Sending to"+opponent._socket.remoteAddress);
           opponent.send(JSON.stringify({ type: "opponentMove", move }));
         }
 
-        games[room].turn = opponent;
-
-        games[room].players.forEach((player) => {
-          player.send(
-            JSON.stringify({
-              type: "turnUpdate",
-              currentTurn: games[room].turn._socket.remoteAddress,
-            })
-          );
-        });
+        
       }
     } else if (data.type === "makeAttack") {
       const { room, attack } = data;
       console.log("Attack received:", attack);
-      if (games[room] && games[room].turn === ws) {
+      if (games[room]) {
         const opponent = games[room].players.find((player) => player !== ws);
         if (opponent) {
           opponent.send(JSON.stringify({ type: "opponentAttack","attack": attack }));
         }
       }
-    } else if (data.type==="getTurn"){
-      const { room } = data;
-      if (games[room]) {
-        const currentTurn = games[room].turn._socket.remoteAddress;
-        ws.send(JSON.stringify({ type: "currentTurn", currentTurn }));
-      }
-    } else if (data.type === "endGame") {
+    }  else if (data.type === "endGame") {
       const { room, winner } = data;
       console.log("Game ended:", winner);
       if (games[room]) {
@@ -234,9 +220,20 @@ wss.on("connection", (ws) => {
       }
     } else if(data.type==="changeTurn"){
       const { room } = data;
+      console.log("Change turn received:", room);
+      console.log("Current turn:", games[room].turn);
       if (games[room]) {
-        games[room].turn==1? games[room].turn=2:games[room].turn=1;
-        ws.send(JSON.stringify({ type: "currentTurn", "turn":games[room].turn }));
+        if(games[room].turn == 1){
+          console.log("The turn is 1, changing to 2");
+          games[room].turn = 2;
+        }else{
+          console.log("The turn is 2, changing to 1");
+          games[room].turn = 1;
+        }
+        console.log("The new turn is"+games[room].turn);
+        games[room].players.forEach((player) => {
+          player.send(JSON.stringify({ type: "turnUpdate", turn: games[room].turn }));
+        });
       }
     }
   });
