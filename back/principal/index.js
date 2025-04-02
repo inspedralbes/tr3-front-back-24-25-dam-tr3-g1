@@ -209,35 +209,24 @@ wss.on("connection", (ws) => {
     } else if (data.type === "endGame") {
       const { room, userId } = data;
       console.log("Game ended:", userId);
+      games[room].winner = userId;
+      games[room].players.forEach((player) => {
+        
+      });
       if (games[room]) {
         games[room].players.forEach(async (player) => {
-          const isWinner = player.userId === userId;
-          const user = await User.findByPk(player.userId);
-
-          if (user) {
-            if (isWinner) {
-              user.elo += 30;
-              user.points += 50;
-              user.victories += 1;
-            } else {
-              if (user.elo > 0) {
-                user.elo -= 15;
-              }
-              user.points += 10;
-              user.defeats += 1;
-            }
-            await user.save();
-          }
-
-          player.send(
-            JSON.stringify({
-              type: "gameOver",
-              reason: "GG",
-              winner: userId,
-            })
-          );
-        });
-        delete games[room];
+          
+            player.send(
+              JSON.stringify({
+                type: "gameOver",
+                reason: "opponentDisconnected",
+                winner: userId,
+              })
+            );
+          
+        
+      });
+        
       }
     } else if (data.type === "changeTurn") {
       const { room } = data;
@@ -257,6 +246,48 @@ wss.on("connection", (ws) => {
             JSON.stringify({ type: "turnUpdate", turn: games[room].turn })
           );
         });
+      }
+    } else if (data.type==="IWon"){
+      const {room, userId} = data;
+      try {
+        const player = await User.findByPk(userId);
+        if (player) {
+          player.elo += 30;
+          player.victories += 1;
+          player.points += 30;
+          await player.save();
+        }
+
+        games[room].players = games[room].players.filter((p) => p !== ws);
+        if (games[room].players.length === 0) {
+          console.log("Destroying room")
+          delete games[room];
+        }
+      } catch (error) {
+        console.error("Error updating player stats:", error);
+      }
+    } else if(data.type==="ILost"){
+      const {room, userId} = data;
+      try {
+        console.log("HIII")
+        const player = await User.findByPk(userId);
+        if (player) {
+          if(player.elo<15){
+            player.elo =0;
+          } else{
+            player.elo -= 15;
+          }
+          player.defeats += 1;
+          player.points += 10;
+          await player.save();
+        }
+
+        games[room].players = games[room].players.filter((p) => p !== ws);
+        if (games[room].players.length === 0) {
+          delete games[room];
+        }
+      } catch (error) {
+        console.error("Error updating player stats:", error);
       }
     }
   });
