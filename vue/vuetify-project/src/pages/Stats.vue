@@ -65,7 +65,7 @@
   function infoUsers() {
     getUsersStatistics()
       .then(data => {
-        data.sort((a, b) => b.points - a.points);
+        data.sort((a, b) => b.elo - a.elo);
 
         users.value = data.map((user, index) => ({
           position: index + 1,
