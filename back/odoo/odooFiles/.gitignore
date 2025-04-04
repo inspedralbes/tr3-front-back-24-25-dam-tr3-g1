@@ -1,0 +1,21 @@
+# Ignorar todos los archivos compilados de Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Ignorar todos los __pycache__ dentro de addons/
+addons/**/__pycache__/
+
+# Ignorar bases de datos de Odoo (por si estás trabajando con SQLite)
+*.db
+*.sql
+
+# Ignorar configuraciones locales de Odoo
+odoo.conf
+*.log
+*.swp
+
+# Ignorar entornos virtuales de Python (si usas venv)
+venv/
+.env/

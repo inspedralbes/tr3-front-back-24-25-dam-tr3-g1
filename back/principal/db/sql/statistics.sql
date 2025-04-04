@@ -1,0 +1,63 @@
+-- Insertar 20 usuarios
+INSERT INTO USERS (id, username, password, email, elo, victories, defeats, points) VALUES
+(1000, 'Carlos', 'Jupiter1', 'carlos@example.com', 1200, 10, 5, 1500),
+(1001, 'Fernando', 'Jupiter1', 'fernando@example.com', 1250, 15, 3, 1800),
+(1002, 'Alejandro', 'Jupiter1', 'alejandro@example.com', 1100, 8, 7, 1300),
+(1003, 'Diego', 'Jupiter1', 'diego@example.com', 1180, 12, 6, 1600),
+(1004, 'Javier', 'Jupiter1', 'javier@example.com', 1300, 20, 2, 2000),
+(1005, 'Roberto', 'Jupiter1', 'roberto@example.com', 1220, 14, 4, 1750),
+(1006, 'Luis', 'Jupiter1', 'luis@example.com', 1080, 6, 9, 1200),
+(1007, 'Manuel', 'Jupiter1', 'manuel@example.com', 1150, 10, 6, 1450),
+(1008, 'Pablo', 'Jupiter1', 'pablo@example.com', 1000, 5, 10, 900),
+(1009, 'Antonio', 'Jupiter1', 'antonio@example.com', 1050, 7, 8, 1100),
+(1010, 'Hugo', 'Jupiter1', 'hugo@example.com', 980, 3, 12, 850),
+(1011, 'Santiago', 'Jupiter1', 'santiago@example.com', 1260, 16, 5, 1850),
+(1012, 'Martín', 'Jupiter1', 'martin@example.com', 1190, 11, 7, 1550),
+(1013, 'Lucas', 'Jupiter1', 'lucas@example.com', 1120, 9, 8, 1350),
+(1014, 'Mateo', 'Jupiter1', 'mateo@example.com', 1040, 5, 9, 1000),
+(1015, 'Gonzalo', 'Jupiter1', 'gonzalo@example.com', 980, 4, 11, 900),
+(1016, 'Andrés', 'Jupiter1', 'andres@example.com', 1240, 18, 4, 1900),
+(1017, 'Emilio', 'Jupiter1', 'emilio@example.com', 1210, 13, 5, 1700),
+(1018, 'Joaquín', 'Jupiter1', 'joaquin@example.com', 1350, 22, 2, 2200),
+(1019, 'Sebastián', 'Jupiter1', 'sebastian@example.com', 1400, 25, 1, 2500);
+
+-- Insertar 10 personajes
+INSERT INTO CHARACTERS (id, name, weapon, vs_sword, vs_spear, vs_axe, vs_bow, vs_magic, distance, winged, sprite, icon, atk, movement, health, price) VALUES
+(1000, 'Excalibur Knight', 'SWORD', 1.1, 0.9, 1.0, 1.2, 0.8, 5, 0, 'knight.png', 'knight_icon.png', 50, 3, 100, 500),
+(1001, 'Spear Guardian', 'SPEAR', 0.9, 1.1, 1.0, 0.8, 1.2, 6, 0, 'guardian.png', 'guardian_icon.png', 45, 4, 90, 450),
+(1002, 'Axe Berserker', 'AXE', 1.0, 1.0, 1.1, 0.9, 1.3, 4, 0, 'berserker.png', 'berserker_icon.png', 55, 2, 110, 550),
+(1003, 'Elven Archer', 'BOW', 1.2, 0.8, 0.9, 1.1, 1.0, 7, 0, 'archer.png', 'archer_icon.png', 40, 5, 80, 400),
+(1004, 'Sorcerer', 'MAGIC', 0.8, 1.2, 1.3, 1.0, 1.1, 8, 1, 'sorcerer.png', 'sorcerer_icon.png', 60, 3, 120, 600),
+(1005, 'Royal Knight', 'SWORD', 1.1, 0.9, 1.0, 1.2, 0.8, 5, 0, 'royalknight.png', 'royalknight_icon.png', 50, 3, 100, 500),
+(1006, 'Dragon Spearman', 'SPEAR', 0.9, 1.1, 1.0, 0.8, 1.2, 6, 0, 'spearman.png', 'spearman_icon.png', 45, 4, 90, 450),
+(1007, 'Viking Warrior', 'AXE', 1.0, 1.0, 1.1, 0.9, 1.3, 4, 0, 'viking.png', 'viking_icon.png', 55, 2, 110, 550),
+(1008, 'Ranger', 'BOW', 1.2, 0.8, 0.9, 1.1, 1.0, 7, 0, 'ranger.png', 'ranger_icon.png', 40, 5, 80, 400),
+(1009, 'Dark Mage', 'MAGIC', 0.8, 1.2, 1.3, 1.0, 1.1, 8, 1, 'darkmage.png', 'darkmage_icon.png', 60, 3, 120, 600),
+(1010, 'Espadita', 'SWORD', 0.8, 1.2, 1.3, 1.0, 1.1, 8, 1, '/Sprites/Espadita', '/Sprites/Espadita/icon.png', 60, 3, 120, 600),
+(1011, 'Lanzita', 'SPEAR', 0.8, 1.2, 1.3, 1.0, 1.1, 8, 1, '/Sprites/Lanzita', '/Sprites/Lanzita/icon.png', 60, 3, 120, 600),
+(1012, 'Hachita', 'AXE', 0.8, 1.2, 1.3, 1.0, 1.1, 8, 1, '/Sprites/Hachita', '/Sprites/Hachita/icon.png', 60, 3, 120, 600),
+(1013, 'Arquito', 'BOW', 0.8, 1.2, 1.3, 1.0, 1.1, 8, 1, '/Sprites/Arquito', '/Sprites/Arquito/icon.png', 60, 3, 120, 600),
+(1014, 'Magico', 'MAGIC', 0.8, 1.2, 1.3, 1.0, 1.1, 8, 1, '/Sprites/Magico', '/Sprites/Magico/icon.png', 60, 3, 120, 600);
+
+-- Insertar armies para cada usuario
+INSERT INTO ARMIES (userid, unit1, unit2, unit3, unit4) VALUES
+(1000, 1000, 1001, 1002, 1003),
+(1001, 1000, 1005, 1006, 1007),
+(1002, 1001, 1009, 1000, 1001),
+(1003, 1000, 1003, 1004, 1005),
+(1004, 1000, 1007, 1008, 1009),
+(1005, 1000, 1001, 1002, 1003),
+(1006, 1000, 1005, 1006, 1007),
+(1007, 1008, 1009, 1000, 1001),
+(1008, 1002, 1003, 1004, 1005),
+(1009, 1000, 1007, 1008, 1009),
+(1010, 1000, 1001, 1002, 1003),
+(1011, 1004, 1005, 1006, 1007),
+(1012, 1008, 1009, 1000, 1001),
+(1013, 1002, 1003, 1004, 1005),
+(1014, 1006, 1007, 1008, 1009),
+(1015, 1000, 1001, 1002, 1003),
+(1016, 1004, 1005, 1006, 1007),
+(1017, 1008, 1009, 1000, 1001),
+(1018, 1002, 1003, 1004, 1005),
+(1019, 1006, 1007, 1008, 1009);

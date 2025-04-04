@@ -1,0 +1,150 @@
+{
+  "bodyTypeName": "male",
+  "url": "https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/#?body=Body_color_light&head=Human_male_light&sex=male&weapon=Dragon_spear_silver&socks=High_Socks_black&jacket=Tabard_forest&hair=Jewfro_blonde",
+  "spritesheets": "https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/spritesheets/",
+  "version": 1,
+  "datetime": "29/3/2025, 19:31:39",
+  "credits": [
+    {
+      "fileName": "body/bodies/male/light.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "bluecarrot16,JaidynReiman,Benjamin K. Smith (BenCreating),Evert,Eliza Wyatt (ElizaWy),TheraHedwig,MuffinElZangano,Durrani,Johannes Sjölund (wulax),Stephen Challener (Redshrike)",
+      "urls": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles,https://opengameart.org/content/lpc-medieval-fantasy-character-sprites,https://opengameart.org/content/lpc-male-jumping-animation-by-durrani,https://opengameart.org/content/lpc-runcycle-and-diagonal-walkcycle,https://opengameart.org/content/lpc-revised-character-basics,https://opengameart.org/content/lpc-be-seated,https://opengameart.org/content/lpc-runcycle-for-male-muscular-and-pregnant-character-bases-with-modular-heads,https://opengameart.org/content/lpc-jump-expanded,https://opengameart.org/content/lpc-character-bases",
+      "notes": "see details at https://opengameart.org/content/lpc-character-bases; 'Thick' Male Revised Run/Climb by JaidynReiman (based on ElizaWy's LPC Revised)"
+    },
+    {
+      "fileName": "head/heads/human/male/light.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "bluecarrot16,Benjamin K. Smith (BenCreating),Stephen Challener (Redshrike)",
+      "urls": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles,https://opengameart.org/content/lpc-character-bases",
+      "notes": "original head by Redshrike, tweaks by BenCreating, modular version by bluecarrot16"
+    },
+    {
+      "fileName": "hair/jewfro/adult/blonde.png",
+      "licenses": "OGA-BY 3.0+,CC-BY 3.0+,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "JaidynReiman",
+      "urls": "https://opengameart.org/content/lpc-1-hairstyle-2-hair-extensions-3-previously-unofficially-released-hairstyles,https://github.com/jrconway3/Universal-LPC-spritesheet/commit/46ddcf05a0e43e7aa6ffd47d350eef0eb529ac24",
+      "notes": ""
+    },
+    {
+      "fileName": "torso/jacket/tabard/male/forest.png",
+      "licenses": "OGA-BY 3.0,CC-BY-SA 3.0,GPL 3.0",
+      "authors": "bluecarrot16,Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites,http://opengameart.org/content/lpc-clothing-updates",
+      "notes": "original by wulax, edited to v3 base by bluecarrot16"
+    },
+    {
+      "fileName": "feet/socks/high/male/black.png",
+      "licenses": "OGA-BY 3.0,GPL 3.0",
+      "authors": "JaidynReiman,ElizaWy,Bluecarrot16,Stephen Challener (Redshrike),Johannes Sjölund (wulax)",
+      "urls": "https://github.com/ElizaWy/LPC/tree/main/Characters/Clothing,https://opengameart.org/content/lpc-expanded-socks-shoes",
+      "notes": "original overalls and thin socks by ElizaWy, base animations adapted from v3 overalls by bluecarrot16, socks by JaidynReiman"
+    },
+    {
+      "fileName": "weapon/polearm/dragonspear/foreground/walk/silver.png",
+      "licenses": "CC-BY-SA 3.0",
+      "authors": "Daniel Eddeland (daneeklu),gr3yh47,Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-weapons-two-bows-a-spear-and-a-trident,https://opengameart.org/content/lpc-extended-weapon-animations",
+      "notes": "original **dragon spear** by daneeklu and gr3yh47; adapted to opposite hand and split into layers by bluecarrot16"
+    },
+    {
+      "fileName": "weapon/polearm/dragonspear/background/walk/silver.png",
+      "licenses": "CC-BY-SA 3.0",
+      "authors": "Daniel Eddeland (daneeklu),gr3yh47,Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-weapons-two-bows-a-spear-and-a-trident,https://opengameart.org/content/lpc-extended-weapon-animations",
+      "notes": "original **dragon spear** by daneeklu and gr3yh47; adapted to opposite hand and split into layers by bluecarrot16"
+    },
+    {
+      "fileName": "weapon/polearm/dragonspear/foreground/thrust/silver.png",
+      "licenses": "CC-BY-SA 3.0",
+      "authors": "Daniel Eddeland (daneeklu),gr3yh47,Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-weapons-two-bows-a-spear-and-a-trident,https://opengameart.org/content/lpc-extended-weapon-animations",
+      "notes": "original **dragon spear** by daneeklu and gr3yh47; adapted to opposite hand and split into layers by bluecarrot16"
+    },
+    {
+      "fileName": "weapon/polearm/dragonspear/background/thrust/silver.png",
+      "licenses": "CC-BY-SA 3.0",
+      "authors": "Daniel Eddeland (daneeklu),gr3yh47,Johannes Sjölund (wulax)",
+      "urls": "https://opengameart.org/content/lpc-weapons-two-bows-a-spear-and-a-trident,https://opengameart.org/content/lpc-extended-weapon-animations",
+      "notes": "original **dragon spear** by daneeklu and gr3yh47; adapted to opposite hand and split into layers by bluecarrot16"
+    }
+  ],
+  "layers": [
+    {
+      "fileName": "weapon/polearm/dragonspear/background/thrust/silver.png",
+      "zPos": -1,
+      "custom_animation": "thrust_oversize",
+      "parentName": "weapon",
+      "name": "Dragon_spear",
+      "variant": "silver",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "weapon/polearm/dragonspear/background/walk/silver.png",
+      "zPos": 9,
+      "custom_animation": "walk_128",
+      "parentName": "weapon",
+      "name": "Dragon_spear",
+      "variant": "silver",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "body/bodies/male/light.png",
+      "zPos": 10,
+      "parentName": "body",
+      "name": "Body_color",
+      "variant": "light",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "feet/socks/high/male/black.png",
+      "zPos": 14,
+      "parentName": "socks",
+      "name": "High_Socks",
+      "variant": "black",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "torso/jacket/tabard/male/forest.png",
+      "zPos": 55,
+      "parentName": "jacket",
+      "name": "Tabard",
+      "variant": "forest",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "head/heads/human/male/light.png",
+      "zPos": 100,
+      "parentName": "head",
+      "name": "Human_male",
+      "variant": "light",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "hair/jewfro/adult/blonde.png",
+      "zPos": 120,
+      "parentName": "hair",
+      "name": "Jewfro",
+      "variant": "blonde",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering,idle,jump,run,sit,emote,climb,combat,1h_slash,1h_backslash,1h_halfslash"
+    },
+    {
+      "fileName": "weapon/polearm/dragonspear/foreground/walk/silver.png",
+      "zPos": 140,
+      "custom_animation": "walk_128",
+      "parentName": "weapon",
+      "name": "Dragon_spear",
+      "variant": "silver",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    },
+    {
+      "fileName": "weapon/polearm/dragonspear/foreground/thrust/silver.png",
+      "zPos": 150,
+      "custom_animation": "thrust_oversize",
+      "parentName": "weapon",
+      "name": "Dragon_spear",
+      "variant": "silver",
+      "supportedAnimations": "spellcast,thrust,walk,slash,shoot,hurt,watering"
+    }
+  ]
+}
